@@ -23,12 +23,33 @@ module.exports = function(grunt) {
       // when this task is run, lint the Gruntfile and all js files in src
       build: ['Gruntfile.js', 'src/**/*.js']
     },
+    copy: {
+        main: {
+            files: [
+              {expand: true, src: ['Erika.js', 'Core/**'], dest: 'tmp/', filter: 'isFile'},
+            ],
+      },
+    },
+    concat: {
+        options: {
+          stripBanners: true,
+          banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+            '<%= grunt.template.today("yyyy-mm-dd") %> \n* BY Xian Li<kagurahun@gmail.com>*/',
+        },
+        dist: {
+          src: ['tmp/**'],
+          dest: 'dev/Erika.js',
+        },
+    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-concat');
 
-  // Default task(s).
   grunt.registerTask('default', ['jshint','uglify']);
+  grunt.registerTask('build', ['jshint','copy', 'concat']);
+  grunt.registerTask('dev', ['jshint','copy']);
 
 };

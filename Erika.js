@@ -1,4 +1,4 @@
-var Erika = (function () {
+var Erika = (function (options) {
 
     'use strict';
 
@@ -12,26 +12,34 @@ var Erika = (function () {
         'routes' : [],
         'controller' : { },
         'controller_dependancy':{ },
+
+        // setup mode and root of the app
         'config': function(options) {
-            resources.mode = options && options.mode && options.mode == 'history'
+            resources.mode = options && options.mode && options.mode === 'history'
                         && !!(history.pushState) ? 'history' : 'hash';
-            resources.root = options && options.root ? '/' + resources.clearSlashes(options.root) + '/' : '/';
+            resources.root = (options && options.root )? '/' + resources.clearSlashes(options.root) + '/' : '/';
         },
+
+        // get info after "?" or "#" in url
         'getFragment': function() {
             var fragment = '';
             if(resources.mode === 'history') {
                 fragment = resources.clearSlashes(decodeURI(location.pathname + location.search));
                 fragment = fragment.replace(/\?(.*)$/, '');
-                fragment = resources.root != '/' ? fragment.replace(resources.root, '') : fragment;
+                fragment = resources.root !== '/' ? fragment.replace(resources.root, '') : fragment;
             } else {
                 var match = window.location.href.match(/#(.*)$/);
                 fragment = match ? match[1] : '';
             }
             return resources.clearSlashes(fragment);
         },
+
+        // remove '/' in begining and end
         'clearSlashes': function(path) {
             return path.toString().replace(/\/$/, '').replace(/^\//, '');
         },
+
+        //
         'check': function (hash) {
             var reg, keys, match, routeParams;
             for (var i = 0, max = resources.routes.length; i < max; i++ ) {
@@ -78,17 +86,42 @@ var Erika = (function () {
         },
     },
     api = {
+        // get filter entry
         'filters': function (key, val) {
             resources.filters[key] = val;
         },
+
+        // add a factory component to tha app
         'factory': function (key, arrayArg) {
-            var last_index = arrayArg.length-1;
-            var dependancies = arrayArg.slice(0, -1);
-            if (typeof arrayArg[last_index] === "function") {
-                console.log("-"+api.loadDependancies(dependancies));
-                resources.factory[key] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
-            } else {
-                console.log("Nan");
+            if (key === undefined ){
+                console.log("Error: factory undefined key");
+                return;
+            }
+
+            if (arrayArg === undefined || ! arrayArg instanceof Array){
+                console.log("Error: factory invalid args");
+                return;
+            }
+
+            if (arrayArg.length > 1){
+                var last_index = arrayArg.length-1;
+                var dependancies = arrayArg.slice(0, -1);
+                if (typeof arrayArg[last_index] === "function") {
+                    console.log(api.loadDependancies(dependancies));
+
+                    // use arrayargs to call the dependency
+                    resources.factory[key] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
+                } else {
+                    console.log("Nan");
+                }
+            }
+            else if (arrayArg.length == 1){
+                if (typeof arrayArg[0] === "function") {
+                    console.log("- null dependency");
+                    resources.factory[key] = arrayArg[0].apply(this, []); // arrayArg[last_index];
+                } else {
+                    console.log("Nan");
+                }
             }
         },
         'routes' :  function(route, controller){
@@ -203,6 +236,11 @@ var Erika = (function () {
             return this.indexOf(str) == 0;
           };
         }
+    }
+
+    // for internal debug
+    function printFactories(){
+        console.log(resources.factory);
     }
 
     initiate();

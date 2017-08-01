@@ -1,7 +1,5 @@
 var logger = (function(erika, env){
 
-    'use strict';
-
     var trace = [];
     env = env || 'production';
 
