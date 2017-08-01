@@ -73,6 +73,7 @@ var Erika = (function (options) {
             var current = "/";
             var fn = function() {
                 if(current !== resources.getFragment()) {
+                    console.log(current, resources.getFragment());
                     current = resources.getFragment();
                     resources.check(current);
                 }
@@ -177,7 +178,7 @@ var Erika = (function (options) {
         // load dependencies from different places
         'loadDependancies' : function(arrayArg){
 
-            if (arrayArg === undefined || ! array instanceof Array){
+            if (arrayArg === undefined || ! arrayArg instanceof Array){
                 console.log("Error: dependencies loading");
                 return;
             }
@@ -242,7 +243,7 @@ var Erika = (function (options) {
 
             // check if this is a $er module
             if(key.startsWith('$er')){
-                if (array.length > 1){
+                if (arrayArg.length > 1){
                     var last_index = arrayArg.length-1;
                     var dependancies = arrayArg.slice(0, -1);
                     if (typeof arrayArg[last_index] === "function") {
@@ -252,7 +253,7 @@ var Erika = (function (options) {
                         console.log("Error: module is not a function");
                     }
                 }
-                else if (array.length == 1 ){
+                else if (arrayArg.length == 1 ){
                     if (typeof arrayArg[0] === "function") {
                         console.log ('null dependencies');
                         resources[key.substring(3, key.length)] = arrayArg[0].apply(this, []);
@@ -266,6 +267,7 @@ var Erika = (function (options) {
             else{
                 console.log("Error in module "+key+": should starts with $er");
             }
+            console.log(resources);
         }
     };
 
@@ -299,7 +301,7 @@ var Erika = (function (options) {
         resources.config({mode :'history'});
         resources.listen();
 
-        if (typeof String.prototype.startsWith != 'function') {
+        if (typeof String.prototype.startsWith !== 'function') {
           // see below for better implementation!
           String.prototype.startsWith = function (str){
             return this.indexOf(str) == 0;
