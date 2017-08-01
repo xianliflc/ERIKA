@@ -55,14 +55,14 @@ var Erika = (function (options) {
                     var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
                         LDependancy.push(routeParams);
                         resources.controller[resources.routes[i].handler].apply(this, LDependancy);
-                        break;
+                        //break;
                 }
                 else{
                     if(resources.clearSlashes(resources.routes[i].path) == hash){
                         //load dependency and call
                         var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
                         resources.controller[resources.routes[i].handler].apply(this, LDependancy);
-                        break;
+                        //break;
                     }
                 }
             }
