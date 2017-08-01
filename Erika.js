@@ -6,7 +6,7 @@ var Erika = (function (options) {
         'filters' : { },
         'constants' : { },
         'factory' : { },
-        '$me' : { },
+        '$er' : { },
         'mode' : null,
         'root' : '/',
         'routes' : [],
@@ -68,6 +68,7 @@ var Erika = (function (options) {
             }
         },
 
+        //
         'listen': function() {
             var current = "/";
             var fn = function() {
@@ -76,11 +77,11 @@ var Erika = (function (options) {
                     resources.check(current);
                 }
             }
-            if(resources.mode == 'hash'){
+            if(resources.mode === 'hash'){
                 clearInterval(this.interval);
                 this.interval = setInterval(fn, 50);
             }
-            if(resources.mode == 'history'){
+            if(resources.mode === 'history'){
                 this.interval = setTimeout(fn, 50);
             }
         },
@@ -103,6 +104,7 @@ var Erika = (function (options) {
                 return;
             }
 
+            // if the factory has any parameter
             if (arrayArg.length > 1){
                 var last_index = arrayArg.length-1;
                 var dependancies = arrayArg.slice(0, -1);
@@ -112,33 +114,74 @@ var Erika = (function (options) {
                     // use arrayargs to call the dependency
                     resources.factory[key] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
                 } else {
-                    console.log("Nan");
+                    console.log("Error: factory is not a function");
                 }
             }
+
+            // if the factory does not have parameter at all
             else if (arrayArg.length == 1){
                 if (typeof arrayArg[0] === "function") {
                     console.log("- null dependency");
-                    resources.factory[key] = arrayArg[0].apply(this, []); // arrayArg[last_index];
+                    resources.factory[key] = arrayArg[0].apply(this, []);
                 } else {
-                    console.log("Nan");
+                    console.log("Error: factory is not a function");
                 }
             }
+            else{
+                console.log("Error: factory undefined function");
+            }
         },
+
+        // add binding or pth - controller to routes
         'routes' :  function(route, controller){
             var temp = {'path':route, 'handler':controller };
             resources.routes.push(temp);
         },
+
+        //
         'controller' : function(controller, handler){
-            var last_index = handler.length-1;
-            var dependancies = handler.slice(0, -1);
-            if (typeof handler[last_index] === "function") {
-                resources.controller[controller] = handler[last_index];
-                resources.controller_dependancy[controller] =  dependancies;
+
+            if (controller === undefined ){
+                console.log("Error: controller undefined name");
+                return;
+            }
+
+            if (handler === undefined || ! handler instanceof Array){
+                console.log("Error: controller invalid args");
+                return;
+            }
+
+            if (handler.length > 1){
+                var last_index = handler.length-1;
+                var dependancies = handler.slice(0, -1);
+
+                if (typeof handler[last_index] === "function") {
+                    resources.controller[controller] = handler[last_index];
+                    resources.controller_dependancy[controller] =  dependancies;
+                } else {
+                    console.log("Error: Controller is not a function");
+                }
+            }
+            else if (handler.length == 1) {
+                if (typeof handler[0] === "function") {
+                    resources.controller[controller] = handler[0];
+                    resources.controller_dependancy[controller] =  [null];
+                } else {
+                    console.log("Error: Controller is not a function");
+                }
             } else {
-                console.log("Nan");
+                console.log("Error: controller undefined function");
             }
         },
+
+        // load dependencies from different places
         'loadDependancies' : function(arrayArg){
+
+            if (arrayArg === undefined || ! array instanceof Array){
+                console.log("Error: dependencies loading");
+                return;
+            }
+
             var dependancy = [], iter;
             for (iter = 0; iter < arrayArg.length; iter += 1) {
                 if (typeof arrayArg[iter] === "string") {
@@ -150,12 +193,12 @@ var Erika = (function (options) {
                     if (resources.factory.hasOwnProperty(arrayArg[iter])) {
                         dependancy.push(api.loadDependancy(arrayArg[iter]));
                     } else {
-                            //look in constants
+                            //look in constants in modules
                             if (resources.constants.hasOwnProperty(arrayArg[iter])) {
                                 dependancy.push(api.loadConstant(arrayArg[iter]));
                             } else {
-                                //if it is $me scope
-                                if (arrayArg[iter] === "$mi") {
+                                //if it is $er scope
+                                if (arrayArg[iter] === "$er") {
                                     dependancy.push({});
                                 } else {
                                     console.log("Error: " + arrayArg[iter] + " is not Found in constants and Factories");
@@ -184,19 +227,44 @@ var Erika = (function (options) {
             resources.constants[key] = val();
         },
 
+        // load and apply $er modules
         'module': function(key, arrayArg){
-            if(key.startsWith('mi')){
-                var last_index = arrayArg.length-1;
-                var dependancies = arrayArg.slice(0, -1);
-                if (typeof arrayArg[last_index] === "function") {
-                    console.log("-"+api.loadDependancies(dependancies));
-                    resources[key.substring(3, key.length)] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
+
+            if (key === undefined || key === ''){
+                console.log("Error: module invalid name - undefined or empty");
+                return;
+            }
+
+            if (arrayArg === undefined || ! arrayArg instanceof Array){
+                console.log("Error: module invalid args");
+                return;
+            }
+
+            // check if this is a $er module
+            if(key.startsWith('$er')){
+                if (array.length > 1){
+                    var last_index = arrayArg.length-1;
+                    var dependancies = arrayArg.slice(0, -1);
+                    if (typeof arrayArg[last_index] === "function") {
+                        console.log (api.loadDependancies(dependancies));
+                        resources[key.substring(3, key.length)] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
+                    } else {
+                        console.log("Error: module is not a function");
+                    }
+                }
+                else if (array.length == 1 ){
+                    if (typeof arrayArg[0] === "function") {
+                        console.log ('null dependencies');
+                        resources[key.substring(3, key.length)] = arrayArg[0].apply(this, []);
+                    } else {
+                        console.log("Error: module is not a function");
+                    }
                 } else {
-                    console.log("Nan");
+                    console.log("Error: module undefined function");
                 }
             }
             else{
-                console.log("Error in module "+key+": should starts with mi");
+                console.log("Error in module "+key+": should starts with $er");
             }
         }
     };
@@ -227,6 +295,7 @@ var Erika = (function (options) {
     }
 
     function initiate(){
+
         resources.config({mode :'history'});
         resources.listen();
 

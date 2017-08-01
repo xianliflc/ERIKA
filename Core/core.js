@@ -1,5 +1,7 @@
 var core = (function(erika){
 
+    'use strict';
+
     function checkErikaExists(){
         if( erika === undefined){
             if( window.Erika !== undefined){
