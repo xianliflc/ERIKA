@@ -8,9 +8,9 @@ var logger = (function(erika, env){
             trace.push([obj,message]);
             print(obj, message, env);
         }else{
-            trace.push([obj,message])
+            trace.push([obj,message]);
         }
-    };
+    }
 
     function print(obj, message, env){
         if (typeof obj === 'object' ){
@@ -41,7 +41,7 @@ var logger = (function(erika, env){
         } else {
             console.log(message + ": " + obj);
         }
-    };
+    }
 
     function getLogger(){
         env = env || 'production';
@@ -49,7 +49,7 @@ var logger = (function(erika, env){
 //            return
 //        });
 
-    };
+    }
 
     function printTrace(obj){
         if (obj !== undefined){

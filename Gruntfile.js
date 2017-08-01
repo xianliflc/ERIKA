@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 //        src: 'src/<%= pkg.name %>.js',
 //        dest: 'build/<%= pkg.name %>.min.js'
           files: {
-              'prod/erika-core.min.js': ['Erika.js','Core/*.js' ]
+              'prod/erika-core.min.js': ['Erika.js','Core/*.js', 'utils/*.js' ]
           }
       }
     },
@@ -21,12 +21,12 @@ module.exports = function(grunt) {
       },
 
       // when this task is run, lint the Gruntfile and all js files in src
-      build: ['Gruntfile.js', 'src/**/*.js']
+      build: ['Gruntfile.js', 'Erika.js','Core/*.js', 'utils/*.js']
     },
     copy: {
         main: {
             files: [
-              {expand: true, src: ['Erika.js', 'Core/**'], dest: 'tmp/', filter: 'isFile'},
+              {expand: true, src: ['Erika.js', 'Core/**', 'utils/**'], dest: 'tmp/', filter: 'isFile'},
             ],
       },
     },
@@ -50,6 +50,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['jshint','uglify']);
   grunt.registerTask('build', ['jshint','copy', 'concat']);
-  grunt.registerTask('dev', ['jshint','copy']);
+  grunt.registerTask('build-dev', ['jshint','copy']);
 
 };

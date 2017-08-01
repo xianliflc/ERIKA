@@ -12,7 +12,7 @@ var core = (function(erika){
                 return false;
             }
         }
-    };
+    }
 
 
     return {

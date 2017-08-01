@@ -15,8 +15,8 @@ var Erika = (function (options) {
 
         // setup mode and root of the app
         'config': function(options) {
-            resources.mode = options && options.mode && options.mode === 'history'
-                        && !!(history.pushState) ? 'history' : 'hash';
+            resources.mode = options && options.mode && options.mode === 'history' &&
+                !!(history.pushState) ? 'history' : 'hash';
             resources.root = (options && options.root )? '/' + resources.clearSlashes(options.root) + '/' : '/';
         },
 
@@ -43,7 +43,7 @@ var Erika = (function (options) {
         'check': function (hash) {
             var reg, keys, match, routeParams;
             for (var i = 0, max = resources.routes.length; i < max; i++ ) {
-                routeParams = {}
+                routeParams = {};
                 keys = resources.clearSlashes(resources.routes[i].path).match(/:([^\/]+)/g);
                 match = hash.match(new RegExp(resources.clearSlashes(resources.routes[i].path).replace(/:([^\/]+)/g, "([^\/]*)")));
                 console.log(resources.routes[i].path);
@@ -77,11 +77,13 @@ var Erika = (function (options) {
                     current = resources.getFragment();
                     resources.check(current);
                 }
-            }
+            };
+
             if(resources.mode === 'hash'){
                 clearInterval(this.interval);
                 this.interval = setInterval(fn, 50);
             }
+
             if(resources.mode === 'history'){
                 this.interval = setTimeout(fn, 50);
             }
@@ -100,7 +102,7 @@ var Erika = (function (options) {
                 return;
             }
 
-            if (arrayArg === undefined || ! arrayArg instanceof Array){
+            if (arrayArg === undefined || !(arrayArg instanceof Array)){
                 console.log("Error: factory invalid args");
                 return;
             }
@@ -147,7 +149,7 @@ var Erika = (function (options) {
                 return;
             }
 
-            if (handler === undefined || ! handler instanceof Array){
+            if (handler === undefined || ! (handler instanceof Array)){
                 console.log("Error: controller invalid args");
                 return;
             }
@@ -178,7 +180,7 @@ var Erika = (function (options) {
         // load dependencies from different places
         'loadDependancies' : function(arrayArg){
 
-            if (arrayArg === undefined || ! arrayArg instanceof Array){
+            if (arrayArg === undefined || ! (arrayArg instanceof Array) ){
                 console.log("Error: dependencies loading");
                 return;
             }
@@ -236,7 +238,7 @@ var Erika = (function (options) {
                 return;
             }
 
-            if (arrayArg === undefined || ! arrayArg instanceof Array){
+            if (arrayArg === undefined || ! (arrayArg instanceof Array) ){
                 console.log("Error: module invalid args");
                 return;
             }
@@ -323,5 +325,5 @@ var Erika = (function (options) {
         'controller': controller,
         'constants': constants,
         'module': module
-    }
+    };
 });
