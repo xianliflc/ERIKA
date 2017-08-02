@@ -12,6 +12,7 @@ var Erika = (function (options) {
         'routes' : [],
         'controller' : { },
         'controller_dependancy':{ },
+        'utils': { },
 
         // setup mode and root of the app
         'config': function(options) {

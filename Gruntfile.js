@@ -4,6 +4,7 @@ module.exports = function(grunt) {
     var allFiles        = ['Gruntfile.js','Erika.js','Core/*.js', 'utils/*.js', 'dom/*.js' ];
     var devDir          = 'dev/';
     var tmpDir          = 'tmp/';
+    var banner          = '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %>\n* BY Xian Li<kagurahun@gmail.com>*/\n';
 
   // Project configuration.
   grunt.initConfig({
