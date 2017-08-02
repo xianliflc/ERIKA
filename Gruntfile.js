@@ -1,5 +1,10 @@
 module.exports = function(grunt) {
 
+    var resourceFiles   = ['Erika.js','Core/*.js', 'utils/*.js', 'dom/*.js' ];
+    var allFiles        = ['Gruntfile.js','Erika.js','Core/*.js', 'utils/*.js', 'dom/*.js' ];
+    var devDir          = 'dev/';
+    var tmpDir          = 'tmp/';
+
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -11,7 +16,7 @@ module.exports = function(grunt) {
 //        src: 'src/<%= pkg.name %>.js',
 //        dest: 'build/<%= pkg.name %>.min.js'
           files: {
-              'prod/erika-core.min.js': ['Erika.js','Core/*.js', 'utils/*.js' ]
+              'prod/erika-core.min.js': resourceFiles
           }
       }
     },
@@ -20,13 +25,16 @@ module.exports = function(grunt) {
         reporter: require('jshint-stylish') // use jshint-stylish to make our errors look and read good
       },
 
-      // when this task is run, lint the Gruntfile and all js files in src
-      build: ['Gruntfile.js', 'Erika.js','Core/*.js', 'utils/*.js']
+      build: allFiles
     },
     copy: {
         main: {
             files: [
-              {expand: true, src: ['Erika.js', 'Core/**', 'utils/**'], dest: 'tmp/', filter: 'isFile'},
+              {
+                  expand: true,
+                  src: resourceFiles,
+                  dest: tmpDir,
+                  filter: 'isFile'},
             ],
       },
     },
@@ -37,8 +45,8 @@ module.exports = function(grunt) {
             '<%= grunt.template.today("yyyy-mm-dd") %> \n* BY Xian Li<kagurahun@gmail.com>*/',
         },
         dist: {
-          src: ['tmp/**'],
-          dest: 'dev/Erika.js',
+          src: [tmpDir+'**'],
+          dest: devDir+'Erika.js',
         },
     }
   });

@@ -24,11 +24,13 @@ var utils = (function(erika){
         if (typeof erika.utils !== undefined){
             // todo some extra logic
         }
+    } else {
+        console.log("ERROR: ERIKA is not defined");
+        return;
     }
 
     erika.utils = utils;
 
     // if you want a return;
     return erika;
-
 });
