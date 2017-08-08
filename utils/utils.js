@@ -9,8 +9,7 @@ var utils = (function(){
         },
 
         'startsWith' :  function startsWith(body,str) {
-            return
-            body.indexOf(str) == 0;
+            return  body.indexOf(str) === 0;
         },
 
         'indexOf'   :   function() {},

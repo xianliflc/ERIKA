@@ -1,17 +1,20 @@
 module.exports = function(grunt) {
 
-    var resourceFiles   = ['Erika.js','Core/*.js', 'utils/*.js', 'dom/*.js' ];
-    var allFiles        = ['Gruntfile.js','Erika.js','Core/*.js', 'utils/*.js', 'dom/*.js' ];
+    var coreFile        = 'Erika.js';
+    var resourceFiles   = [coreFile,'Core/*.js', 'utils/*.js', 'dom/*.js' ];
+    var allFiles        = ['Gruntfile.js',coreFile,'Core/*.js', 'utils/*.js', 'dom/*.js' ];
     var devDir          = 'dev/';
     var tmpDir          = 'tmp/';
-    var banner          = '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %>\n* BY Xian Li<kagurahun@gmail.com>*/\n';
+    var banner          = '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+                            '<%= grunt.template.today("yyyy-mm-dd") %> \n* BY Xian Li<kagurahun@gmail.com>*/';
+
 
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     uglify: {
       options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %>\n* BY Xian Li<kagurahun@gmail.com>*/\n'
+        banner: banner
       },
       build: {
 //        src: 'src/<%= pkg.name %>.js',
@@ -23,7 +26,7 @@ module.exports = function(grunt) {
     },
     jshint: {
       options: {
-        reporter: require('jshint-stylish') // use jshint-stylish to make our errors look and read good
+        reporter: require('jshint-stylish')
       },
 
       build: allFiles
@@ -42,12 +45,11 @@ module.exports = function(grunt) {
     concat: {
         options: {
           stripBanners: true,
-          banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-            '<%= grunt.template.today("yyyy-mm-dd") %> \n* BY Xian Li<kagurahun@gmail.com>*/',
+          banner: banner,
         },
         dist: {
           src: [tmpDir+'**'],
-          dest: devDir+'Erika.js',
+          dest: devDir+coreFile,
         },
     }
   });
