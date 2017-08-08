@@ -1,10 +1,10 @@
-var dom = (function(options){
+var dom = (function (options) {
 
     'use strict';
 
 
     var Dome = function (els) {
-        for(var i = 0; i < els.length; i++ ) {
+        for (var i = 0; i < els.length; i++) {
             this[i] = els[i];
         }
         this.length = els.length;
@@ -12,12 +12,12 @@ var dom = (function(options){
 
     Dome.prototype = {
 
-        forEach : function (callback) {
+        forEach: function (callback) {
             this.map(callback);
             return this;
         },
 
-        map : function (callback) {
+        map: function (callback) {
             var results = [];
             for (var i = 0; i < this.length; i++) {
                 results.push(callback.call(this, this[i], i));
@@ -25,12 +25,12 @@ var dom = (function(options){
             return results; //.length > 1 ? results : results[0];
         },
 
-        mapOne : function (callback) {
+        mapOne: function (callback) {
             var m = this.map(callback);
             return m.length > 1 ? m : m[0];
         },
 
-        text : function (text) {
+        text: function (text) {
             if (typeof text !== "undefined") {
                 return this.forEach(function (el) {
                     el.innerText = text;
@@ -42,7 +42,7 @@ var dom = (function(options){
             }
         },
 
-        html : function (html) {
+        html: function (html) {
             if (typeof html !== "undefined") {
                 return this.forEach(function (el) {
                     el.innerHTML = html;
@@ -54,11 +54,11 @@ var dom = (function(options){
             }
         },
 
-        addClass : function (classes) {
+        addClass: function (classes) {
             var className = "";
             if (typeof classes !== 'string') {
                 for (var i = 0; i < classes.length; i++) {
-                   className += " " + classes[i];
+                    className += " " + classes[i];
                 }
             } else {
                 className = " " + classes;
@@ -68,20 +68,21 @@ var dom = (function(options){
             });
         },
 
-        removeClass : function (clazz) {
+        removeClass: function (clazz) {
             return this.forEach(function (el) {
-                var cs = el.className.split(' '), i;
+                var cs = el.className.split(' '),
+                    i;
 
-                while ( (i = cs.indexOf(clazz)) > -1) {
+                while ((i = cs.indexOf(clazz)) > -1) {
                     cs = cs.slice(0, i).concat(cs.slice(++i));
                 }
                 el.className = cs.join(' ');
             });
         },
 
-        attr : function (attr, val) {
+        attr: function (attr, val) {
             if (typeof val !== 'undefined') {
-                return this.forEach(function(el) {
+                return this.forEach(function (el) {
                     el.setAttribute(attr, val);
                 });
             } else {
@@ -91,36 +92,36 @@ var dom = (function(options){
             }
         },
 
-        append : function (els) {
+        append: function (els) {
             return this.forEach(function (parEl, i) {
                 els.forEach(function (childEl) {
-                    parEl.appendChild( (i > 0) ? childEl.cloneNode(true) : childEl);
+                    parEl.appendChild((i > 0) ? childEl.cloneNode(true) : childEl);
                 });
             });
         },
 
-        prepend : function (els) {
+        prepend: function (els) {
             return this.forEach(function (parEl, i) {
-                for (var j = els.length -1; j > -1; j--) {
+                for (var j = els.length - 1; j > -1; j--) {
                     parEl.insertBefore((i > 0) ? els[j].cloneNode(true) : els[j], parEl.firstChild);
                 }
             });
         },
 
-        remove : function () {
+        remove: function () {
             return this.forEach(function (el) {
                 return el.parentNode.removeChild(el);
             });
         },
 
-        on : (function () {
+        on: (function () {
             if (document.addEventListener) {
                 return function (evt, fn) {
                     return this.forEach(function (el) {
                         el.addEventListener(evt, fn, false);
                     });
                 };
-            } else if (document.attachEvent)  {
+            } else if (document.attachEvent) {
                 return function (evt, fn) {
                     return this.forEach(function (el) {
                         el.attachEvent("on" + evt, fn);
@@ -135,14 +136,14 @@ var dom = (function(options){
             }
         }()),
 
-        off : (function () {
+        off: (function () {
             if (document.removeEventListener) {
                 return function (evt, fn) {
                     return this.forEach(function (el) {
                         el.removeEventListener(evt, fn, false);
                     });
                 };
-            } else if (document.detachEvent)  {
+            } else if (document.detachEvent) {
                 return function (evt, fn) {
                     return this.forEach(function (el) {
                         el.detachEvent("on" + evt, fn);
@@ -159,9 +160,9 @@ var dom = (function(options){
 
     };
 
-    function setDom(dom){
-        if (typeof window.erika !== undefined){
-            if (typeof erika.utils !== undefined){
+    function setDom(dom) {
+        if (typeof window.erika !== undefined) {
+            if (typeof erika.utils !== undefined) {
                 // todo some extra logic
             }
         } else {
@@ -184,7 +185,7 @@ var dom = (function(options){
         } else {
             els = [selector];
         }
-        return setDom( new Dome(els));
+        return setDom(new Dome(els));
     };
     var create = function (tagName, attrs) {
         var el = new Dome([document.createElement(tagName)]);
@@ -207,7 +208,7 @@ var dom = (function(options){
     };
 
     return {
-        careate:    create,
-        get:        get
+        careate: create,
+        get: get
     };
 });

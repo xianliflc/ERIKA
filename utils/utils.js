@@ -1,23 +1,23 @@
-var utils = (function(){
+var utils = (function () {
 
     'use strict';
 
     var libs = {
 
-        'isArray' :     function isArray(o) {
-            return Object.prototype.toString.call(o) === '[object Array]' ;
+        'isArray': function isArray(o) {
+            return Object.prototype.toString.call(o) === '[object Array]';
         },
 
-        'startsWith' :  function startsWith(body,str) {
-            return  body.indexOf(str) === 0;
+        'startsWith': function startsWith(body, str) {
+            return body.indexOf(str) === 0;
         },
 
-        'indexOf'   :   function() {},
+        'indexOf': function () {},
     };
 
     if (typeof Array.prototype.indexOf !== 'function') {
         Array.prototype.indexOf = function (item) {
-            for(var i = 0; i < this.length; i++) {
+            for (var i = 0; i < this.length; i++) {
                 if (this[i] === item) {
                     return i;
                 }
@@ -27,13 +27,13 @@ var utils = (function(){
     }
 
     var utils = {
-            'isArray' : libs.isArray,
-            'startsWith' :  libs.startsWith,
-            'indeOf'    :   libs.indexOf
+        'isArray': libs.isArray,
+        'startsWith': libs.startsWith,
+        'indeOf': libs.indexOf
     };
 
-    if (typeof window.erika !== undefined){
-        if (typeof window.erika.utils !== undefined){
+    if (typeof window.erika !== undefined) {
+        if (typeof window.erika.utils !== undefined) {
             // todo some extra logic
         }
     } else {

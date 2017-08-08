@@ -1,13 +1,12 @@
-var core = (function(erika){
+var core = (function (erika) {
 
     'use strict';
 
-    function checkErikaExists(){
-        if( erika === undefined){
-            if( window.Erika !== undefined){
+    function checkErikaExists() {
+        if (erika === undefined) {
+            if (window.Erika !== undefined) {
                 erika = window.Erika();
-            }
-            else{
+            } else {
                 console.log('Erika is not defined');
                 return false;
             }
