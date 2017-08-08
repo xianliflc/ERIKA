@@ -1,4 +1,4 @@
-var utils = (function(erika){
+var utils = (function(){
 
     'use strict';
 
@@ -11,17 +11,30 @@ var utils = (function(erika){
         'startsWith' :  function startsWith(body,str) {
             return
             body.indexOf(str) == 0;
-        }
+        },
+
+        'indexOf'   :   function() {},
     };
 
+    if (typeof Array.prototype.indexOf !== 'function') {
+        Array.prototype.indexOf = function (item) {
+            for(var i = 0; i < this.length; i++) {
+                if (this[i] === item) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+    }
 
     var utils = {
             'isArray' : libs.isArray,
-            'startsWith' :  libs.startsWith
+            'startsWith' :  libs.startsWith,
+            'indeOf'    :   libs.indexOf
     };
 
-    if (typeof erika !== undefined){
-        if (typeof erika.utils !== undefined){
+    if (typeof window.erika !== undefined){
+        if (typeof window.erika.utils !== undefined){
             // todo some extra logic
         }
     } else {
@@ -29,8 +42,8 @@ var utils = (function(erika){
         return;
     }
 
-    erika.utils = utils;
+    window.erika.utils = utils;
 
     // if you want a return;
-    return erika;
+    return window.erika;
 });
