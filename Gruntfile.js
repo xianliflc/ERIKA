@@ -5,6 +5,7 @@ module.exports = function (grunt) {
     var allFiles = ['Gruntfile.js', coreFile, 'Core/*.js', 'utils/*.js', 'dom/*.js'];
     var devDir = 'dev/';
     var tmpDir = 'tmp/';
+    var version = '<%= pkg.version %>';
     var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %> \n* BY Xian Li<kagurahun@gmail.com>*/';
 
