@@ -313,6 +313,11 @@ var Erika = (function (options) {
         }
     }
 
+    function version() {
+        return '1.0.0 beta 1';
+    }
+
+
     // for internal debug
     function printFactories() {
         console.log(resources.factory);
@@ -326,6 +331,7 @@ var Erika = (function (options) {
         'routes': routes,
         'controller': controller,
         'constants': constants,
-        'module': module
+        'module': module,
+        'version':  version,
     };
 });
