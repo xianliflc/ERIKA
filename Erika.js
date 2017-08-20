@@ -298,10 +298,9 @@ var Erika = (function (options) {
         api.module(arguments[0], arguments[1]);
     }
 
-    function initiate() {
-
+    function initiate(mode) {
         resources.config({
-            mode: 'history'
+            mode: mode || 'history'
         });
         resources.listen();
 
@@ -314,7 +313,7 @@ var Erika = (function (options) {
     }
 
     function version() {
-        return '1.0.0 beta 1';
+        return '1.0.0 alpha 3';
     }
 
 
@@ -323,7 +322,13 @@ var Erika = (function (options) {
         console.log(resources.factory);
     }
 
-    initiate();
+    if ( options.mode !== undefined && (options.mode === 'history' || options.mode === 'hash') ) {
+        initiate(options.mode);
+    } else {
+        initiate();
+    }
+
+
 
     return {
         'filters': filters,
