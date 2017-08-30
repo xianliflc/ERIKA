@@ -193,6 +193,8 @@ var Erika = (function (options) {
                         //look in modules
                         if (resources.hasOwnProperty(arrayArg[iter])) {
                             dependancy.push(api.loadModule(arrayArg[iter]));
+                        } else if (arrayArg[iter].startsWith('$er') &&        resources['$er'].hasOwnProperty(arrayArg[iter].substring(3, arrayArg[iter].length)) ) {
+                            dependancy.push(api.loadModule(arrayArg[iter]));
                         } else {
                             //look in factory
                             if (resources.factory.hasOwnProperty(arrayArg[iter])) {
@@ -217,7 +219,12 @@ var Erika = (function (options) {
             },
 
             'loadModule': function (key) {
-                return resources[key];
+                if (key.startsWith('$er')) {
+                    return resources['$er'][key.substring(3, key.length)];
+                } else {
+                    return resources[key];
+                }
+
             },
 
             'loadDependancy': function (key) {
@@ -245,21 +252,20 @@ var Erika = (function (options) {
                     return;
                 }
 
-                // check if this is a $er module
+                // check if this is a $er module for run-time
                 if (key.startsWith('$er')) {
                     if (arrayArg.length > 1) {
                         var last_index = arrayArg.length - 1;
                         var dependancies = arrayArg.slice(0, -1);
                         if (typeof arrayArg[last_index] === "function") {
                             console.log(api.loadDependancies(dependancies));
-                            resources[key.substring(3, key.length)] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
+                            resources['$er'][key.substring(3, key.length)] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
                         } else {
                             console.log("Error: module is not a function");
                         }
                     } else if (arrayArg.length == 1) {
                         if (typeof arrayArg[0] === "function") {
-                            console.log('null dependencies');
-                            resources[key.substring(3, key.length)] = arrayArg[0].apply(this, []);
+                            resources['$er'][key.substring(3, key.length)] = arrayArg[0].apply(this, []);
                         } else {
                             console.log("Error: module is not a function");
                         }
@@ -298,11 +304,11 @@ var Erika = (function (options) {
         api.module(arguments[0], arguments[1]);
     }
 
-    function initiate() {
-
+    function initiate(mode) {
         resources.config({
-            mode: 'history'
+            mode: mode || 'history'
         });
+
         resources.listen();
 
         if (typeof String.prototype.startsWith !== 'function') {
@@ -311,10 +317,16 @@ var Erika = (function (options) {
                 return this.indexOf(str) == 0;
             };
         }
+
+        build();
+    }
+
+    function build() {
+
     }
 
     function version() {
-        return '1.0.0 beta 1';
+        return '1.0.0 alpha 3';
     }
 
 
@@ -323,7 +335,13 @@ var Erika = (function (options) {
         console.log(resources.factory);
     }
 
-    initiate();
+    if ( options.mode !== undefined && (options.mode === 'history' || options.mode === 'hash') ) {
+        initiate(options.mode);
+    } else {
+        initiate();
+    }
+
+
 
     return {
         'filters': filters,
