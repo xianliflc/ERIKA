@@ -308,6 +308,7 @@ var Erika = (function (options) {
         resources.config({
             mode: mode || 'history'
         });
+
         resources.listen();
 
         if (typeof String.prototype.startsWith !== 'function') {
@@ -316,6 +317,12 @@ var Erika = (function (options) {
                 return this.indexOf(str) == 0;
             };
         }
+
+        build();
+    }
+
+    function build() {
+
     }
 
     function version() {
