@@ -10,6 +10,7 @@
     "grunt-contrib-less": "latest",
     "grunt-contrib-uglify": "latest",
     "grunt-contrib-watch": "latest",
+    "grunt-sass": "^2.1.0",
     "jshint-stylish": "latest"
   }
 }

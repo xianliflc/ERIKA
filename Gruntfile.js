@@ -6,6 +6,8 @@ module.exports = function (grunt) {
     var devDir = 'dev/';
     var tmpDir = 'tmp/';
     var version = '<%= pkg.version %>';
+    var sassDir = 'sass/';
+    var cssDir = 'css/';
     var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %> \n* BY Xian Li<kagurahun@gmail.com>*/';
 
@@ -53,6 +55,28 @@ module.exports = function (grunt) {
                 src: [tmpDir + '**'],
                 dest: devDir + coreFile,
             },
+        },
+        sass: {
+            options: {
+                sourceMap: true
+            },
+            dist: {
+                files: {
+                }
+            },
+            compile: {
+				files: {
+					'css/main.css': 'scss/main.scss'
+				}
+            },
+            includePaths: {
+				options: {
+					includePaths: ['scss']
+				},
+				files: {
+					'css/main.css': 'scss/main.scss'
+				}
+			},
         }
     });
 
@@ -60,9 +84,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-sass');
 
-    grunt.registerTask('default', ['jshint', 'uglify']);
-    grunt.registerTask('build', ['jshint', 'copy', 'concat']);
-    grunt.registerTask('build-dev', ['jshint', 'copy']);
+    
+    grunt.registerTask('default', ['jshint', 'uglify', 'sass']);
+    grunt.registerTask('build', ['jshint', 'copy', 'concat', 'sass']);
+    grunt.registerTask('build-dev', ['jshint', 'copy', 'sass']);
 
 };
