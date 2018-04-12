@@ -75,10 +75,42 @@ window.Erika.ajax = (function () {
 
     }
 
+    /**
+     *
+     * @param file
+     * @param cb
+     */
+    function readFile(file, cb)
+    {
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", file, false);
+        var result = null;
+        rawFile.onreadystatechange = function ()
+        {
+            if(rawFile.readyState === 4)
+            {
+                if(rawFile.status === 200 || rawFile.status == 0)
+                {
+                    var allText = rawFile.responseText;
+                    cb(allText);
+                }
+            }
+        };
+        rawFile.send(null);
+    }
+
+    /**
+     * 
+     * @param {*} obj 
+     */
     function defaultOnError(obj) {
         console.error(this.statusText);
     }
 
+    /**
+     * 
+     * @param {*} message 
+     */
     function errorMessage(message) {
         console.error(message);
     }
@@ -134,7 +166,8 @@ window.Erika.ajax = (function () {
         ajax: ajax,
         get: get,
         post: post,
-        query: buildQueryString
+        query: buildQueryString,
+        read: readFile
     };
 
 })();
