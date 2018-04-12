@@ -1,6 +1,4 @@
 
-
-
 ## Installation
 
 #### For development:
@@ -18,17 +16,20 @@
 * `npm install`
 * `grunt --force`
 
-
-
 ## Get Started
 
 ### Initialization
 
-<blockquote><pre>var erika = window.Erika();</pre></blockquote>
+```javascript
+
+var erika = window.Erika();
+
+```
 
 ### Add Module
 
-<blockquote><pre><code>
+```javascript
+
 erika.module('$ermodule1', ['filters', '$er', function(filters, $er){
     var mymod = function(){
         var a = 100;
@@ -45,11 +46,11 @@ erika.module('$ermodule2', [function(){
     return mymod;
 }]);          
             
-</pre></code></blockquote>
+```
 
 ### Add Controller
 
-<blockquote><pre><code>
+``` javascript
 erika.controller('contr1', ['filters','constants', function(filters, constants){
     ....
     
@@ -61,12 +62,80 @@ erika.controller('contr2', [function(2){
     
     return {...}
 }]);
-</pre></code></blockquote>
+```
 
 ### Add Route
 
-<blockquote><pre><code>
+```javascript
 erika.routes('/ab/cd', 'contr1');
 
 erika.routes('/abc/123', 'contr2');
-</pre></code></blockquote>
+```
+
+
+
+### Templating
+
+- For example:
+ If you have template files under `views/` and you want to render the file called `test.tmpl` 
+```
+<%=test_value%>
+    asdasd
+<% for(var i = 0; i < list.length; i++) {%>
+    <%=list[i] %> <p>asdasdasd</p>
+<% } %>
+<@ include test/aaa.tmpl @> // this includes another template file under views/test/ called aaa.tmpl
+
+```
+And you want to render it and display it in `<div id="main"></div>`
+
+You may need
+
+```javascript
+Erika.template.init({'base_path' : 'views/'});
+```
+Then you may have
+
+```javascript
+
+Erika.template.renderFile(
+    'views/index.tmpl', 
+    {
+        'test_value' : '<h1> test </h1>', 
+        'list': [
+            1, 2, 3, 4, 5]
+    },
+    function(data) { // this is the callback
+        console.log(data);
+    }, 
+    document.getElementById('main')
+);
+
+```
+
+You can also render a script block like the following
+
+```
+    <script type="plain/text" id ="test"> 
+       <p>whatever you have <p>
+        <@ include index.tmpl @>
+    </script>
+```
+
+And 
+
+```javascript
+
+Erika.template.render(
+    'test', 
+    {
+        'test_value' : '<h1> test </h1>', 
+        'list': [
+            1, 2, 3, 4, 5
+    ]},
+    function(data) {// this is the callback
+        console.log(data);
+    }, 
+    document.getElementById('main')
+);
+```
