@@ -1,0 +1,14 @@
+@mixin small-logo-font {
+    font-family: Titillium Web,sans-serif;
+    font-size: 10px;
+}
+
+@mixin medium-logo-font {
+    font-family: Titillium Web,sans-serif;
+    font-size: 12px;
+}
+
+@mixin large-logo-font {
+    font-family: Titillium Web,sans-serif;
+    font-size: 15px;
+}

@@ -2,10 +2,10 @@
 Erika = window.Erika || {};
 
 Erika.template  = (function () {
-  let cache = {};
-  let config = {};
-  let templates = {};
-  let isInitialized = false;
+  var cache = {};
+  var config = {};
+  var templates = {};
+  var isInitialized = false;
   
 
     /**
@@ -51,7 +51,7 @@ Erika.template  = (function () {
     if (matches) {
         include(matches[1], matches[0], str, function(new_str) {
             str = new_str;
-            let f = func(new_str);
+            var f = func(new_str);
             if (typeof callback === 'function') {
                 callback(data ? f( data ) : f);
             } else if (typeof callback === 'string'){
@@ -59,7 +59,7 @@ Erika.template  = (function () {
             }
         });
     } else  {
-        let fn = func(str);
+        var fn = func(str);
         if (typeof callback === 'function') {
             console.log(fn, str);
             callback(data ? fn( data ) : fn);
@@ -77,8 +77,8 @@ Erika.template  = (function () {
      * @returns {*}
      */
     function getIncludes(str) {
-        let regex = /<@[ ]*include[ ]*([\w\.\/\-]+\.tmpl)[ ]*@>/gi;
-        let matches = regex.exec(str);
+        var regex = /<@[ ]*include[ ]*([\w\.\/\-]+\.tmpl)[ ]*@>/gi;
+        var matches = regex.exec(str);
         return (matches && matches[1] !== undefined) ? matches : false;
     }
 
@@ -90,8 +90,8 @@ Erika.template  = (function () {
     function load_template (s) {
         if(!/\W/.test(s)) {
             
-            let element = document.getElementById(s);
-            let result = element.innerHTML;
+            var element = document.getElementById(s);
+            var result = element.innerHTML;
             element.parentNode.removeChild(element);
             return result;
         } else if (/((?:[^\/]*\/)*)(\w*)\.$/.test(s)) {
@@ -116,7 +116,7 @@ Erika.template  = (function () {
         })
         .then(function(data) {
             original_str = original_str.replace(placeholder, data + '\r');
-            let matches = getIncludes(original_str);
+            var matches = getIncludes(original_str);
             
             if (matches) {
                 include(matches[1], matches[0], original_str, cb);
@@ -158,8 +158,8 @@ Erika.template  = (function () {
      * @param {*} key 
      */
     function init (newconfig, key) {
-        let regex = /(([\w\.\/\-]*[\/]{0,1})(\b[\w\-]+\.html))/gi;
-        let m  = regex.exec(location.pathname);
+        var regex = /(([\w\.\/\-]*[\/]{0,1})(\b[\w\-]+\.html))/gi;
+        var m  = regex.exec(location.pathname);
 
         config.path = (m && m[2]) ? m[2] : '/';
         if (!key || key.trim() === '') {

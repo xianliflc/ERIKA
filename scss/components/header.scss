@@ -1,0 +1,75 @@
+$header-width : $full-width;
+$header-bg-color: $color-gray-600;
+
+.header {
+    position: relative;
+    z-index: 1000;
+    height: 60px;
+    background-color: #23262E;
+    color: $color-gray-300;
+    min-height: $small-row-height;
+    line-height: 1.5em;
+
+    &--full {
+        width: $full-width;
+    }
+
+    &--half {
+        width: $half-width;
+    }
+
+    &--light {
+        background-color: $color-gray-300;
+        color: $color-gray-800;
+    }
+
+    &--dark {
+        background-color: $color-gray-900;
+        color: $color-gray-200;
+    }
+
+    &__content {
+        position: absolute;
+        font-size: x-large;
+        top: 18px;
+        &--left {
+            left: 0px;
+            margin-left: 5px;
+        }
+        &--right {
+            right: 0px;
+            margin-right: 5px;
+        }
+    }
+
+    .logo {
+        @include general_header_logo_content;
+        .version {
+            @include small-logo-font;
+            line-height: 1em;
+        }
+        &--small {
+            margin: 0 0 0 5px;
+            padding: 2px 8px;
+        }
+
+        &--medium {
+            margin: 0 0 0 8px;
+            padding: 3px 10px;
+            .version {
+                @include medium-logo-font;
+            }
+        }
+
+        &--large {
+            margin: 0 0 0 10px;
+            padding: 5px 12px;
+            .version {
+                @include large-logo-font;
+            }
+        }
+    }
+
+
+}
+

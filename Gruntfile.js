@@ -62,11 +62,12 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
+                    //'css/erika-ui.css': 'scss/erika-ui.scss'
                 }
             },
             compile: {
 				files: {
-					'css/main.css': 'scss/main.scss'
+					'css/erika-ui.css': 'scss/erika-ui.scss'
 				}
             },
             includePaths: {
@@ -74,7 +75,7 @@ module.exports = function (grunt) {
 					includePaths: ['scss']
 				},
 				files: {
-					'css/main.css': 'scss/main.scss'
+					'css/erika-ui.css': 'scss/erika.scss'
 				}
 			},
         }
@@ -90,5 +91,6 @@ module.exports = function (grunt) {
     grunt.registerTask('default', ['jshint', 'uglify', 'sass']);
     grunt.registerTask('build', ['jshint', 'copy', 'concat', 'sass']);
     grunt.registerTask('build-dev', ['jshint', 'copy', 'sass']);
+    grunt.registerTask('build-sass', ['sass']);
 
 };
