@@ -1,0 +1,30 @@
+@mixin small-logo-font {
+    font-family: Titillium Web,sans-serif;
+    font-size: 10px;
+}
+
+@mixin medium-logo-font {
+    font-family: Titillium Web,sans-serif;
+    font-size: 12px;
+}
+
+@mixin large-logo-font {
+    font-family: Titillium Web,sans-serif;
+    font-size: 15px;
+}
+
+
+@mixin small-menu-font {
+    font-family: Tahoma,sans-serif;
+    font-size: 14px;
+}
+
+@mixin medium-menu-font {
+    font-family: Tahoma,sans-serif;
+    font-size: 16px;
+}
+
+@mixin large-menu-font {
+    font-family: Tahoma,sans-serif;
+    font-size: 20px;
+}

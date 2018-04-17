@@ -1,0 +1,43 @@
+$body-bg-color: $color-white;
+$brand-color: $color-green-500;
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    box-sizing: border-box;
+}
+
+*, *::after, *::before {
+    box-sizing: inherit;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: $body-bg-color;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", 微软雅黑, Tahoma, Arial, sans-serif;
+}
+
+main {
+    flex: 1;
+}
+
+.erika-ui__main {
+
+    display: flex;
+
+    .side_menu {
+        //display: inline-flex;
+    }
+
+    .main_content {
+        //display: inline-flex;
+        margin: 10px;    
+        width: -webkit-fill-available;
+        width: 100%;
+    }
+}

@@ -326,7 +326,7 @@ var Erika = (function (options) {
     }
 
     function version() {
-        return '1.0.0 alpha 3';
+        return '0.0.4 alpha';
     }
 
 
