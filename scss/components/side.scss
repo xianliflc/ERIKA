@@ -1,0 +1,30 @@
+$top : $header-height;
+
+.side_menu {
+    top: $top;
+    overflow-x: hidden;
+
+    width: 300px;
+
+    &--small {
+        width: 200px;
+    }
+
+    &--large {
+        width:  400px;
+    }
+
+    &__scroll {
+        height: 100%;
+        overflow-x: hidden;
+
+    }
+
+    ul {
+        li {
+            list-style: none;
+            text-align: -webkit-match-parent;
+        }
+    }
+
+}

@@ -12,3 +12,19 @@
     font-family: Titillium Web,sans-serif;
     font-size: 15px;
 }
+
+
+@mixin small-menu-font {
+    font-family: Tahoma,sans-serif;
+    font-size: 14px;
+}
+
+@mixin medium-menu-font {
+    font-family: Tahoma,sans-serif;
+    font-size: 16px;
+}
+
+@mixin large-menu-font {
+    font-family: Tahoma,sans-serif;
+    font-size: 20px;
+}

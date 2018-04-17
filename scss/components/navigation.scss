@@ -1,0 +1,111 @@
+.erika-ui__navigation {
+  position: relative;
+  color: $color-gray-300;
+  border-radius: 2px;
+  //font-size: 0;
+  box-sizing: border-box!important;
+
+  &-tree {
+      padding: 0;
+
+      .erika-ui__navigation__item {
+          display: block;
+          width: 100%;
+          line-height: 45px;
+      }
+  }
+
+  &__item {
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 60px;
+  }
+
+  &__item--small {
+      @include small-menu-font;
+  }
+
+  &__item--medium {
+      @include medium-menu-font;
+  }
+
+  &__item--large {
+      @include large-menu-font;
+  }
+
+  .erika-ui__collapsible {
+    margin-bottom: .9rem 0;
+    
+    input[type='checkbox'] {
+      display: none;
+    }
+    
+    &__toggle {
+      display: block;
+      text-align: left;
+      padding: 0.2rem;
+      cursor: pointer;     
+      transition: all 0.35s ease-out;
+      padding-left: 8px;
+
+      &:hover {
+        color: $color-gray-400;
+        background-color: $color-gray-800;
+      }
+
+      &::before {
+        content: ' ';
+        display: inline-block;
+        border-top: 5px solid transparent;
+        border-bottom: 5px solid transparent;
+        border-left: 5px solid currentColor;
+        vertical-align: middle;
+        margin-right: .7rem;
+        transform: translateY(-2px);
+        transition: transform .2s ease-out;
+      }
+    }
+    
+    .toggle_icon:checked + .erika-ui__collapsible__toggle::before {
+      transform: rotate(90deg) translateX(-3px);
+    }
+
+    .toggle_icon:checked + .erika-ui__collapsible__toggle {
+      background-color: $color-gray-700;
+      color:$color-gray-50;
+    }
+    
+    .collapsible-content {
+      max-height: 0px;
+      overflow: hidden;
+      transition: max-height .35s ease-in-out;
+
+      & .collapsible-content__inner {
+        line-height: 32px;
+        @include small-menu-font;
+
+        li {
+          padding: .1rem 1.5rem;
+          &:hover {
+            a {
+              color: $color-gray-100;
+            }
+            
+            background-color: $color-gray-900;
+          }
+        }
+      }
+    }
+    
+    .toggle_icon:checked + .erika-ui__collapsible__toggle + .collapsible-content {
+      max-height: 350px;
+    }
+    
+    .toggle_icon:checked + .erika-ui__collapsible__toggle {
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  
+  }
+}

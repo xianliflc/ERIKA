@@ -1,10 +1,11 @@
 $header-width : $full-width;
 $header-bg-color: $color-gray-600;
+$header-height: $medium-row-height;
 
 .header {
     position: relative;
     z-index: 1000;
-    height: 60px;
+    height: $header-height;
     background-color: #23262E;
     color: $color-gray-300;
     min-height: $small-row-height;

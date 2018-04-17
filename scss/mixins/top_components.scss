@@ -6,13 +6,3 @@
     border-radius: 57px;
     background: #7e829b;
 }
-
-@mixin header_content_float_left {
-    left: 0px;
-    margin-left: 5px;
-}
-
-@mixin header_content_float_right {
-    right: 0px;
-    margin-right: 5px;
-}

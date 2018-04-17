@@ -1,0 +1,35 @@
+fieldset {
+    display: block;
+    -webkit-margin-start: 2px;
+    -webkit-margin-end: 2px;
+    -webkit-padding-before: 0.35em;
+    -webkit-padding-start: 0.75em;
+    -webkit-padding-end: 0.75em;
+    -webkit-padding-after: 0.625em;
+    min-width: -webkit-min-content;
+}
+
+legend {
+    display: block;
+    -webkit-padding-start: 2px;
+    -webkit-padding-end: 2px;
+    border-width: initial;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+}
+
+.erika-ui__main {
+    fieldset {
+        margin: 12px 0 20px;
+        border: none;
+        border-top: 1px solid $color-gray-200;
+
+        legend {
+            margin-left: 25px;
+            padding: 0 12px;
+            font-size: 20px;
+            font-weight: 300;
+        }
+    }
+}

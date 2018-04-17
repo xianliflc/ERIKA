@@ -25,3 +25,19 @@ body {
 main {
     flex: 1;
 }
+
+.erika-ui__main {
+
+    display: flex;
+
+    .side_menu {
+        //display: inline-flex;
+    }
+
+    .main_content {
+        //display: inline-flex;
+        margin: 10px;    
+        width: -webkit-fill-available;
+        width: 100%;
+    }
+}
