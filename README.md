@@ -70,6 +70,17 @@ erika.controller('contr2', [function(2){
 erika.routes('/ab/cd', 'contr1');
 
 erika.routes('/abc/123', 'contr2');
+
+```
+
+> Andvanced usage
+
+- The route will match the regex [a-z]*test[0-9]+
+- Expect parameter test1 in float and test2 in string
+```javascript
+
+erika.routes('[a-z]*test[0-9]+&test1@float&test2@string', 'contr1');
+
 ```
 
 

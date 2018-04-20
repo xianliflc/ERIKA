@@ -35,7 +35,6 @@ var Erika = (function (options) {
                 return resources.clearSlashes(fragment);
             },
 
-            // remove '/' in begining and end
             'clearSlashes': function (path) {
                 return path.toString().replace(/\/$/, '').replace(/^\//, '');
             },
@@ -45,25 +44,67 @@ var Erika = (function (options) {
                 var reg, keys, match, routeParams;
                 for (var i = 0, max = resources.routes.length; i < max; i++) {
                     routeParams = {};
-                    keys = resources.clearSlashes(resources.routes[i].path).match(/:([^\/]+)/g);
-                    match = hash.match(new RegExp(resources.clearSlashes(resources.routes[i].path).replace(/:([^\/]+)/g, "([^\/]*)")));
-                    console.log(resources.routes[i].path);
+                    keys = resources.clearSlashes(resources.routes[i].path).match(/(&[^\/&]+)/g);
+
+                    const pure_hash =hash.replace(/&([^\/]+)/g, "");
+                    const pure_path = '^' + resources.clearSlashes(resources.routes[i].path).replace(/&([^\/]+)/g, "") + '$';
+                    const match_pure_hash = pure_hash.match(pure_path);
+
+                    if (!match_pure_hash) {
+                        continue;
+                    }
+                    
+                    var regex_string = resources.clearSlashes(resources.routes[i].path).replace(/&([^\/]+)/g, "([^\/]*)");
+
+                    match = hash.match(new RegExp(regex_string));
+
                     if (match) {
-                        match.shift();
-                        match.forEach(function (value, i) {
-                            routeParams[keys[i].replace(":", "")] = value;
+                        var keys_with_type = {};
+                        keys.forEach(function (item, i){
+                             const v = item.split('@');
+
+                             keys_with_type[v[0].split('&')[1]] = v[1] !== undefined ? v[1] : ''; 
                         });
+
+                        var matches = match[1].split('&');
+                        matches.shift();
+                        matches.forEach(function (item, i) {
+                            const arr =item.split('=');
+                            const key = arr[0];
+                            var value = arr[1] !== undefined ? arr[1] : '';
+
+                            if (keys_with_type[key] !== undefined) {
+                                switch(keys_with_type[key]) {
+                                    case 'array':
+                                    case 'object':
+                                        value = JSON.parse(value);
+                                        break;
+                                    case 'string':
+                                        break;
+                                    case 'integer':
+                                    case 'int':
+                                        value = parseInt(value);
+                                        break;
+                                    case 'float':
+                                        value = parseFloat(value);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                routeParams[key] = value;
+                            }
+                            
+                        });
+                        console.log(keys, routeParams);
                         var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
                         LDependancy.push(routeParams);
                         resources.controller[resources.routes[i].handler].apply(this, LDependancy);
-                        //break;
+                        break;
                     } else {
-                        if (resources.clearSlashes(resources.routes[i].path) == hash) {
-                            //load dependency and call
-                            var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
-                            resources.controller[resources.routes[i].handler].apply(this, LDependancy);
-                            //break;
-                        }
+                        //load dependency and call
+                        var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
+                        resources.controller[resources.routes[i].handler].apply(this, LDependancy);
+                        break;
                     }
                 }
             },
@@ -326,7 +367,7 @@ var Erika = (function (options) {
     }
 
     function version() {
-        return '0.0.4 alpha';
+        return '0.0.5 alpha';
     }
 
 
