@@ -64,6 +64,9 @@
         margin-right: .7rem;
         transform: translateY(-2px);
         transition: transform .2s ease-out;
+        position: absolute;
+        right: 8px;
+        top: 25px;
       }
     }
     
@@ -86,25 +89,53 @@
         @include small-menu-font;
 
         li {
-          padding: .1rem 1.5rem;
+          padding: .2rem .6rem;
+
+          cite {
+            text-overflow: ellipsis;
+            display:inline-block;
+            white-space: nowrap;
+            overflow:hidden;
+            max-width: 68%;
+          }
+
           &:hover {
+
             a {
               color: $color-gray-100;
+
+            }
+            cite {
+              overflow-x: unset;
+              max-width: 100%;
             }
             
             background-color: $color-gray-900;
+            
           }
         }
       }
     }
     
     .toggle_icon:checked + .erika-ui__collapsible__toggle + .collapsible-content {
-      max-height: 350px;
+      max-height: 100%;
     }
     
     .toggle_icon:checked + .erika-ui__collapsible__toggle {
       border-bottom-right-radius: 0;
       border-bottom-left-radius: 0;
+    }
+
+    .erika-ui__collapsible__toggle:hover:after, .toggle_icon:checked  + .erika-ui__collapsible__toggle:after {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 5px;
+      height: 50px;
+      background-color: #5FB878;
+      transition: all .2s;
+      -webkit-transition: all .2s;
+      content: " ";
     }
   
   }

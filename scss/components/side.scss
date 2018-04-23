@@ -4,14 +4,14 @@ $top : $header-height;
     top: $top;
     overflow-x: hidden;
 
-    width: 300px;
+    width: 320px;
 
     &--small {
-        width: 200px;
+        width: 210px;
     }
 
     &--large {
-        width:  400px;
+        width:  430px;
     }
 
     &__scroll {
