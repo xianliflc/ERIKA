@@ -10,6 +10,7 @@ var Erika = (function (options) {
             'mode': null,
             'root': '/',
             'routes': [],
+            'page' : {},
             'controller': {},
             'controller_dependancy': {},
             'utils': {},
@@ -43,7 +44,7 @@ var Erika = (function (options) {
             'check': function (hash) {
                 var reg, keys, match, routeParams;
                 for (var i = 0, max = resources.routes.length; i < max; i++) {
-                    routeParams = {};
+                    routeParams = [];
                     keys = resources.clearSlashes(resources.routes[i].path).match(/(&[^\/&]+)/g);
 
                     const pure_hash =hash.replace(/&([^\/]+)/g, "");
@@ -78,26 +79,28 @@ var Erika = (function (options) {
                                     case 'array':
                                     case 'object':
                                         value = JSON.parse(value);
+                                        api.pageDependency(key, value);
                                         break;
                                     case 'string':
+                                        api.pageDependency(key, value);
                                         break;
                                     case 'integer':
                                     case 'int':
                                         value = parseInt(value);
+                                        api.pageDependency(key, value);
                                         break;
                                     case 'float':
+                                        api.pageDependency(key, value);
                                         value = parseFloat(value);
                                         break;
                                     default:
                                         break;
                                 }
-                                routeParams[key] = value;
                             }
                             
                         });
-                        console.log(keys, routeParams);
+                        
                         var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
-                        LDependancy.push(routeParams);
                         resources.controller[resources.routes[i].handler].apply(this, LDependancy);
                         break;
                     } else {
@@ -229,12 +232,14 @@ var Erika = (function (options) {
 
                 var dependancy = [],
                     iter;
+                
                 for (iter = 0; iter < arrayArg.length; iter += 1) {
                     if (typeof arrayArg[iter] === "string") {
                         //look in modules
                         if (resources.hasOwnProperty(arrayArg[iter])) {
+                            console.log(iter, arrayArg[iter]);
                             dependancy.push(api.loadModule(arrayArg[iter]));
-                        } else if (arrayArg[iter].startsWith('$er') &&        resources['$er'].hasOwnProperty(arrayArg[iter].substring(3, arrayArg[iter].length)) ) {
+                        } else if (arrayArg[iter].startsWith('$er') && arrayArg[iter] !== '$er' && resources['$er'].hasOwnProperty(arrayArg[iter].substring(3, arrayArg[iter].length)) ) {
                             dependancy.push(api.loadModule(arrayArg[iter]));
                         } else {
                             //look in factory
@@ -247,7 +252,9 @@ var Erika = (function (options) {
                                 } else {
                                     //if it is $er scope
                                     if (arrayArg[iter] === "$er") {
-                                        dependancy.push({});
+                                        //dependancy.push();
+                                    } else if (resources.page.hasOwnProperty(arrayArg[iter])) {
+                                        dependancy.push(api.loadPageDepedency(arrayArg[iter]));
                                     } else {
                                         console.log("Error: " + arrayArg[iter] + " is not Found in constants and Factories");
                                     }
@@ -272,8 +279,16 @@ var Erika = (function (options) {
                 return resources.factory[key];
             },
 
+            'loadPageDepedency': function (key) {
+                return resources.page[key];
+            },
+
             'loadConstant': function (key) {
                 return resources.constants[key];
+            },
+
+            'pageDependency': function (key, val) {
+                resources.page[key] = val;
             },
 
             'constants': function (key, val) {
