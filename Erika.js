@@ -14,9 +14,10 @@ var Erika = (function (options) {
             'controller': {},
             'controller_dependancy': {},
             'utils': {},
-
+            'config': options || {},
             // setup mode and root of the app
-            'config': function (options) {
+            'setup': function () {
+                
                 resources.mode = options && options.mode && options.mode === 'history' &&
                     !!(history.pushState) ? 'history' : 'hash';
                 resources.root = (options && options.root) ? '/' + resources.clearSlashes(options.root) + '/' : '/';
@@ -226,7 +227,7 @@ var Erika = (function (options) {
             'loadDependancies': function (arrayArg) {
 
                 if (arrayArg === undefined || !(arrayArg instanceof Array)) {
-                    console.log("Error: dependencies loading");
+                    console.error("Error: dependencies loading");
                     return;
                 }
 
@@ -237,7 +238,7 @@ var Erika = (function (options) {
                     if (typeof arrayArg[iter] === "string") {
                         //look in modules
                         if (resources.hasOwnProperty(arrayArg[iter])) {
-                            console.log(iter, arrayArg[iter]);
+                            //console.log(iter, arrayArg[iter]);
                             dependancy.push(api.loadModule(arrayArg[iter]));
                         } else if (arrayArg[iter].startsWith('$er') && arrayArg[iter] !== '$er' && resources['$er'].hasOwnProperty(arrayArg[iter].substring(3, arrayArg[iter].length)) ) {
                             dependancy.push(api.loadModule(arrayArg[iter]));
@@ -272,7 +273,6 @@ var Erika = (function (options) {
                 } else {
                     return resources[key];
                 }
-
             },
 
             'loadDependancy': function (key) {
@@ -299,12 +299,12 @@ var Erika = (function (options) {
             'module': function (key, arrayArg) {
 
                 if (key === undefined || key === '') {
-                    console.log("Error: module invalid name - undefined or empty");
+                    console.error("Error: module invalid name - undefined or empty");
                     return;
                 }
 
                 if (arrayArg === undefined || !(arrayArg instanceof Array)) {
-                    console.log("Error: module invalid args");
+                    console.error("Error: module invalid args");
                     return;
                 }
 
@@ -317,19 +317,19 @@ var Erika = (function (options) {
                             console.log(api.loadDependancies(dependancies));
                             resources['$er'][key.substring(3, key.length)] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
                         } else {
-                            console.log("Error: module is not a function");
+                            console.error("Error: module is not a function");
                         }
                     } else if (arrayArg.length == 1) {
                         if (typeof arrayArg[0] === "function") {
                             resources['$er'][key.substring(3, key.length)] = arrayArg[0].apply(this, []);
                         } else {
-                            console.log("Error: module is not a function");
+                            console.error("Error: module is not a function");
                         }
                     } else {
-                        console.log("Error: module undefined function");
+                        console.error("Error: module undefined function");
                     }
                 } else {
-                    console.log("Error in module " + key + ": should starts with $er");
+                    console.error("Error in module " + key + ": should starts with $er");
                 }
                 console.log(resources);
             }
@@ -360,10 +360,8 @@ var Erika = (function (options) {
         api.module(arguments[0], arguments[1]);
     }
 
-    function initiate(mode) {
-        resources.config({
-            mode: mode || 'history'
-        });
+    function initiate() {
+        resources.setup();
 
         resources.listen();
 
@@ -385,20 +383,16 @@ var Erika = (function (options) {
         return '0.0.5 alpha';
     }
 
-
     // for internal debug
     function printFactories() {
         console.log(resources.factory);
     }
 
-    if ( options.mode !== undefined && (options.mode === 'history' || options.mode === 'hash') ) {
-        initiate(options.mode);
-    } else {
-        initiate();
+    function cacheFactory(config) {
+        Erika.cache(options.cache || {'type': 'default'});
     }
 
-
-
+    initiate();
     return {
         'filters': filters,
         'factory': factory,
@@ -407,5 +401,7 @@ var Erika = (function (options) {
         'constants': constants,
         'module': module,
         'version':  version,
+        'config' : resources.config,
+        'cacheFactory' : cacheFactory,
     };
 });

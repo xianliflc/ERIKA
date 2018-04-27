@@ -3,7 +3,8 @@ erika.module('$erTracker', [ function(){
     var vars = {
         w : window,
         d : document
-    }
+    };
+    
     vars.e = vars.d.documentElement;
     vars.g = vars.d.getElementsByTagName('body')[0];
     var log = [];
@@ -17,7 +18,7 @@ erika.module('$erTracker', [ function(){
       } else {
         obj.addEventListener( type, fn, false );
       }
-    }
+    };
 
     var mousemove = function (evt) {
         var x = evt.pageX,
@@ -35,7 +36,7 @@ erika.module('$erTracker', [ function(){
         }
         wx = x;
         wy = y;
-    }
+    };
 
     var init = function (period = 500) {
         addEvent(vars.g, "mousemove", mousemove);
@@ -43,11 +44,11 @@ erika.module('$erTracker', [ function(){
                     log.push('x= '+wx+', &y= '+wy);
                     console.log('x= '+wx+', &y= '+wy);
         }, period);
-    }
+    };
 
     var print = function () {
         cnosole.log(log);
-    }
+    };
     return {
         'init': init,
         'print': print

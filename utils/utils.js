@@ -37,7 +37,7 @@ var utils = (function () {
             // todo some extra logic
         }
     } else {
-        console.log("ERROR: ERIKA is not defined");
+        console.error("ERROR: ERIKA is not defined");
         return;
     }
 
