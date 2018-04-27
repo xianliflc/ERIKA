@@ -154,7 +154,6 @@ window.Erika = window.Erika || {};
                 return property_st(Erika.storage.hasOwnProperty(opt.name)? 
                 Erika.storage[opt.name] : (function() {
                     Erika.storage[opt.name] = {};
-                                console.log(Erika.storage);
                                 return Erika.storage[opt.name];
                             })());
             } else {
@@ -164,8 +163,6 @@ window.Erika = window.Erika || {};
         }
 
     })();
-
-
 
 })();
 
