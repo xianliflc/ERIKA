@@ -16,16 +16,14 @@ Erika.template  = (function () {
      * @returns {*}
      */
   function build(str, data, callback){
-    // Figure out if we're getting a template, or if we need to
-    // load the template - and be sure to cache the result.
+
     function func(s) {
+
         return  !/[^\w\.\/\-]/.test(s) ?
         (Erika.cache.has(s, 'templates')? Erika.cache.get(s, '', 'templates') :  build(load_template(s))
         )
         :
-  
-        // Generate a reusable function that will serve as a template
-        // generator (and which will be cached).
+
         new Function("obj",
           "var p=[],print=function(){p.push.apply(p,arguments);};" +
   
@@ -36,14 +34,10 @@ Erika.template  = (function () {
           s
             .replace(/[\r\t\n]/g, " ")
             .split("<%").join("\t")
-            //.split("&lt;%").join("\t")
             .replace(/((^|%>)[^\t]*)'/g, "$1\r")
             .replace(/\t=(.*?)%>/g, "',$1,'")
-            //.replace(/((^|&gt;>)[^\t]*)'/g, "$1\r")
-            //.replace(/\t=(.*?)&gt;>/g, "',$1,'")
              .split("\t").join("');")
             .split("%>").join("p.push('")
-            //.split("%&gt;").join("p.push('")
             .split("\r").join("\\'")
         + "');}return p.join('');");
     }
@@ -63,14 +57,12 @@ Erika.template  = (function () {
     } else  {
         var fn = func(str);
         if (typeof callback === 'function') {
-            console.log(fn, str);
             callback(data ? fn( data ) : fn);
         } else {
             return data ? fn( data ) : fn;
         }
     }
     
-
   }
 
     /**
@@ -86,7 +78,10 @@ Erika.template  = (function () {
         return (matches && matches[1] !== undefined) ? matches : false;
     }
 
-
+    /**
+     * Cache template to Erika cache
+     * @param {*} str 
+     */
     function cacheTemplate(str) {
         
         // get template name and save to cache
@@ -99,6 +94,7 @@ Erika.template  = (function () {
         }
         return str;
     }
+
     /**
      *
      * @param s
@@ -106,7 +102,6 @@ Erika.template  = (function () {
      */
     function load_template (s) {
         if(!/\W/.test(s)) {
-            
             var element = document.getElementById(s);
             var result = element.innerHTML;
             element.parentNode.removeChild(element);
@@ -127,6 +122,7 @@ Erika.template  = (function () {
      * @returns {Promise<string>}
      */
     function include(path, placeholder, original_str, cb) {
+
         return fetch(config.path + config.base_path + path)
         .then(function(response) {
             return response.text();
@@ -145,12 +141,13 @@ Erika.template  = (function () {
         });
     }   
 
-    // function buildPath(path) {
-    //     let regex = /<@[ ]*include[ ]*(([\w\.\/\-]*[\/]{0,1})(\b[\w\-]+\.js|html|tmpl))[ ]*@>/gi;
-    //     let matches = regex.exec(str);
-    //     return (matches && matches[2] !== undefined) ? matches : path;
-    // } 
-
+    /**
+     * Render from file with given path
+     * @param {*} file 
+     * @param {*} data 
+     * @param {*} callback 
+     * @param {*} element 
+     */
     function renderFile(file, data, callback, element) {
         Erika.ajax.read(file, 
             function(str) {
@@ -159,23 +156,30 @@ Erika.template  = (function () {
                     callback(html);
                 });
             }
-    );
- 
+        );
     }
 
+    /**
+     * Render from block or element
+     * @param {*} str 
+     * @param {*} data 
+     * @param {*} callback 
+     * @param {*} element 
+     */
     function render(str, data, callback, element) {
         build(load_template (str), data, function(html) {
             element.innerHTML = html;
             callback(html);
-            
         });
     }
+
     /**
      * 
      * @param {*} newconfig 
      * @param {*} key 
      */
     function init (newconfig, key) {
+
         var regex = /(([\w\.\/\-]*[\/]{0,1})(\b[\w\-]+\.html))/gi;
         var m  = regex.exec(location.pathname);
 
@@ -201,6 +205,5 @@ Erika.template  = (function () {
         'render' : render,
         'renderFile' : renderFile
     };
-
 
 })();

@@ -48,9 +48,9 @@ var Erika = (function (options) {
                     routeParams = [];
                     keys = resources.clearSlashes(resources.routes[i].path).match(/(&[^\/&]+)/g);
 
-                    const pure_hash =hash.replace(/&([^\/]+)/g, "");
-                    const pure_path = '^' + resources.clearSlashes(resources.routes[i].path).replace(/&([^\/]+)/g, "") + '$';
-                    const match_pure_hash = pure_hash.match(pure_path);
+                    var pure_hash =hash.replace(/&([^\/]+)/g, "");
+                    var pure_path = '^' + resources.clearSlashes(resources.routes[i].path).replace(/&([^\/]+)/g, "") + '$';
+                    var match_pure_hash = pure_hash.match(pure_path);
 
                     if (!match_pure_hash) {
                         continue;
@@ -63,7 +63,7 @@ var Erika = (function (options) {
                     if (match) {
                         var keys_with_type = {};
                         keys.forEach(function (item, i){
-                             const v = item.split('@');
+                             var v = item.split('@');
 
                              keys_with_type[v[0].split('&')[1]] = v[1] !== undefined ? v[1] : ''; 
                         });
@@ -71,8 +71,8 @@ var Erika = (function (options) {
                         var matches = match[1].split('&');
                         matches.shift();
                         matches.forEach(function (item, i) {
-                            const arr =item.split('=');
-                            const key = arr[0];
+                            var arr =item.split('=');
+                            var key = arr[0];
                             var value = arr[1] !== undefined ? arr[1] : '';
 
                             if (keys_with_type[key] !== undefined) {
@@ -238,7 +238,6 @@ var Erika = (function (options) {
                     if (typeof arrayArg[iter] === "string") {
                         //look in modules
                         if (resources.hasOwnProperty(arrayArg[iter])) {
-                            //console.log(iter, arrayArg[iter]);
                             dependancy.push(api.loadModule(arrayArg[iter]));
                         } else if (arrayArg[iter].startsWith('$er') && arrayArg[iter] !== '$er' && resources['$er'].hasOwnProperty(arrayArg[iter].substring(3, arrayArg[iter].length)) ) {
                             dependancy.push(api.loadModule(arrayArg[iter]));
