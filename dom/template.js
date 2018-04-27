@@ -20,8 +20,9 @@ Erika.template  = (function () {
     // load the template - and be sure to cache the result.
     function func(s) {
         return  !/[^\w\.\/\-]/.test(s) ?
-        (cache[s] = cache[s] ||
-          build(load_template(s)) ):
+        (Erika.cache.has(s, 'templates')? Erika.cache.get(s, '', 'templates') :  build(load_template(s))
+        )
+        :
   
         // Generate a reusable function that will serve as a template
         // generator (and which will be cached).
@@ -46,8 +47,9 @@ Erika.template  = (function () {
             .split("\r").join("\\'")
         + "');}return p.join('');");
     }
-
     var matches = getIncludes(str);
+    str = cacheTemplate(str);
+
     if (matches) {
         include(matches[1], matches[0], str, function(new_str) {
             str = new_str;
@@ -77,11 +79,26 @@ Erika.template  = (function () {
      * @returns {*}
      */
     function getIncludes(str) {
+        
         var regex = /<@[ ]*include[ ]*([\w\.\/\-]+\.tmpl)[ ]*@>/gi;
         var matches = regex.exec(str);
+
         return (matches && matches[1] !== undefined) ? matches : false;
     }
 
+
+    function cacheTemplate(str) {
+        
+        // get template name and save to cache
+        var regex_name = /<@[ ]*set_name[ ]*([\w\.\/\-]+)[ ]*(with[ ]+([\s\S]+))?@>/gi;
+        var matches_name = regex_name.exec(str);
+        
+        if (matches_name && matches_name[1] !== undefined && !Erika.cache.has(matches_name[1])) {
+            str = str.replace(regex_name, '');
+            Erika.cache.set(matches_name[1], str, 'templates');
+        }
+        return str;
+    }
     /**
      *
      * @param s
@@ -115,6 +132,7 @@ Erika.template  = (function () {
             return response.text();
         })
         .then(function(data) {
+            data = cacheTemplate(data);
             original_str = original_str.replace(placeholder, data + '\r');
             var matches = getIncludes(original_str);
             

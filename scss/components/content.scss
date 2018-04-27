@@ -21,7 +21,7 @@ legend {
 
 .erika-ui__main {
     fieldset {
-        margin: 12px 0 20px;
+        margin: 15px 0 18px;
         border: none;
         border-top: 1px solid $color-gray-200;
 
@@ -32,4 +32,20 @@ legend {
             font-weight: 300;
         }
     }
+}
+
+.highlight {
+    text-transform: uppercase;
+    text-decoration: none;
+    color: $color-white;
+    font-size: 0.8em;
+    text-align: center;
+    padding: 7px;
+    margin-right: 5px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -o-border-radius: 2px;
+    -ms-border-radius: 2px;
+    -khtml-border-radius: 2px;
+    border-radius: 2px;
 }

@@ -10,12 +10,14 @@ var Erika = (function (options) {
             'mode': null,
             'root': '/',
             'routes': [],
+            'page' : {},
             'controller': {},
             'controller_dependancy': {},
             'utils': {},
-
+            'config': options || {},
             // setup mode and root of the app
-            'config': function (options) {
+            'setup': function () {
+                
                 resources.mode = options && options.mode && options.mode === 'history' &&
                     !!(history.pushState) ? 'history' : 'hash';
                 resources.root = (options && options.root) ? '/' + resources.clearSlashes(options.root) + '/' : '/';
@@ -35,7 +37,6 @@ var Erika = (function (options) {
                 return resources.clearSlashes(fragment);
             },
 
-            // remove '/' in begining and end
             'clearSlashes': function (path) {
                 return path.toString().replace(/\/$/, '').replace(/^\//, '');
             },
@@ -44,26 +45,70 @@ var Erika = (function (options) {
             'check': function (hash) {
                 var reg, keys, match, routeParams;
                 for (var i = 0, max = resources.routes.length; i < max; i++) {
-                    routeParams = {};
-                    keys = resources.clearSlashes(resources.routes[i].path).match(/:([^\/]+)/g);
-                    match = hash.match(new RegExp(resources.clearSlashes(resources.routes[i].path).replace(/:([^\/]+)/g, "([^\/]*)")));
-                    console.log(resources.routes[i].path);
+                    routeParams = [];
+                    keys = resources.clearSlashes(resources.routes[i].path).match(/(&[^\/&]+)/g);
+
+                    const pure_hash =hash.replace(/&([^\/]+)/g, "");
+                    const pure_path = '^' + resources.clearSlashes(resources.routes[i].path).replace(/&([^\/]+)/g, "") + '$';
+                    const match_pure_hash = pure_hash.match(pure_path);
+
+                    if (!match_pure_hash) {
+                        continue;
+                    }
+                    
+                    var regex_string = resources.clearSlashes(resources.routes[i].path).replace(/&([^\/]+)/g, "([^\/]*)");
+
+                    match = hash.match(new RegExp(regex_string));
+
                     if (match) {
-                        match.shift();
-                        match.forEach(function (value, i) {
-                            routeParams[keys[i].replace(":", "")] = value;
+                        var keys_with_type = {};
+                        keys.forEach(function (item, i){
+                             const v = item.split('@');
+
+                             keys_with_type[v[0].split('&')[1]] = v[1] !== undefined ? v[1] : ''; 
                         });
+
+                        var matches = match[1].split('&');
+                        matches.shift();
+                        matches.forEach(function (item, i) {
+                            const arr =item.split('=');
+                            const key = arr[0];
+                            var value = arr[1] !== undefined ? arr[1] : '';
+
+                            if (keys_with_type[key] !== undefined) {
+                                switch(keys_with_type[key]) {
+                                    case 'array':
+                                    case 'object':
+                                        value = JSON.parse(value);
+                                        api.pageDependency(key, value);
+                                        break;
+                                    case 'string':
+                                        api.pageDependency(key, value);
+                                        break;
+                                    case 'integer':
+                                    case 'int':
+                                        value = parseInt(value);
+                                        api.pageDependency(key, value);
+                                        break;
+                                    case 'float':
+                                        api.pageDependency(key, value);
+                                        value = parseFloat(value);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            
+                        });
+                        
                         var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
-                        LDependancy.push(routeParams);
                         resources.controller[resources.routes[i].handler].apply(this, LDependancy);
-                        //break;
+                        break;
                     } else {
-                        if (resources.clearSlashes(resources.routes[i].path) == hash) {
-                            //load dependency and call
-                            var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
-                            resources.controller[resources.routes[i].handler].apply(this, LDependancy);
-                            //break;
-                        }
+                        //load dependency and call
+                        var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
+                        resources.controller[resources.routes[i].handler].apply(this, LDependancy);
+                        break;
                     }
                 }
             },
@@ -182,18 +227,20 @@ var Erika = (function (options) {
             'loadDependancies': function (arrayArg) {
 
                 if (arrayArg === undefined || !(arrayArg instanceof Array)) {
-                    console.log("Error: dependencies loading");
+                    console.error("Error: dependencies loading");
                     return;
                 }
 
                 var dependancy = [],
                     iter;
+                
                 for (iter = 0; iter < arrayArg.length; iter += 1) {
                     if (typeof arrayArg[iter] === "string") {
                         //look in modules
                         if (resources.hasOwnProperty(arrayArg[iter])) {
+                            //console.log(iter, arrayArg[iter]);
                             dependancy.push(api.loadModule(arrayArg[iter]));
-                        } else if (arrayArg[iter].startsWith('$er') &&        resources['$er'].hasOwnProperty(arrayArg[iter].substring(3, arrayArg[iter].length)) ) {
+                        } else if (arrayArg[iter].startsWith('$er') && arrayArg[iter] !== '$er' && resources['$er'].hasOwnProperty(arrayArg[iter].substring(3, arrayArg[iter].length)) ) {
                             dependancy.push(api.loadModule(arrayArg[iter]));
                         } else {
                             //look in factory
@@ -206,7 +253,9 @@ var Erika = (function (options) {
                                 } else {
                                     //if it is $er scope
                                     if (arrayArg[iter] === "$er") {
-                                        dependancy.push({});
+                                        //dependancy.push();
+                                    } else if (resources.page.hasOwnProperty(arrayArg[iter])) {
+                                        dependancy.push(api.loadPageDepedency(arrayArg[iter]));
                                     } else {
                                         console.log("Error: " + arrayArg[iter] + " is not Found in constants and Factories");
                                     }
@@ -224,15 +273,22 @@ var Erika = (function (options) {
                 } else {
                     return resources[key];
                 }
-
             },
 
             'loadDependancy': function (key) {
                 return resources.factory[key];
             },
 
+            'loadPageDepedency': function (key) {
+                return resources.page[key];
+            },
+
             'loadConstant': function (key) {
                 return resources.constants[key];
+            },
+
+            'pageDependency': function (key, val) {
+                resources.page[key] = val;
             },
 
             'constants': function (key, val) {
@@ -243,12 +299,12 @@ var Erika = (function (options) {
             'module': function (key, arrayArg) {
 
                 if (key === undefined || key === '') {
-                    console.log("Error: module invalid name - undefined or empty");
+                    console.error("Error: module invalid name - undefined or empty");
                     return;
                 }
 
                 if (arrayArg === undefined || !(arrayArg instanceof Array)) {
-                    console.log("Error: module invalid args");
+                    console.error("Error: module invalid args");
                     return;
                 }
 
@@ -261,19 +317,19 @@ var Erika = (function (options) {
                             console.log(api.loadDependancies(dependancies));
                             resources['$er'][key.substring(3, key.length)] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
                         } else {
-                            console.log("Error: module is not a function");
+                            console.error("Error: module is not a function");
                         }
                     } else if (arrayArg.length == 1) {
                         if (typeof arrayArg[0] === "function") {
                             resources['$er'][key.substring(3, key.length)] = arrayArg[0].apply(this, []);
                         } else {
-                            console.log("Error: module is not a function");
+                            console.error("Error: module is not a function");
                         }
                     } else {
-                        console.log("Error: module undefined function");
+                        console.error("Error: module undefined function");
                     }
                 } else {
-                    console.log("Error in module " + key + ": should starts with $er");
+                    console.error("Error in module " + key + ": should starts with $er");
                 }
                 console.log(resources);
             }
@@ -304,10 +360,8 @@ var Erika = (function (options) {
         api.module(arguments[0], arguments[1]);
     }
 
-    function initiate(mode) {
-        resources.config({
-            mode: mode || 'history'
-        });
+    function initiate() {
+        resources.setup();
 
         resources.listen();
 
@@ -326,23 +380,19 @@ var Erika = (function (options) {
     }
 
     function version() {
-        return '0.0.4 alpha';
+        return '0.0.5 alpha';
     }
-
 
     // for internal debug
     function printFactories() {
         console.log(resources.factory);
     }
 
-    if ( options.mode !== undefined && (options.mode === 'history' || options.mode === 'hash') ) {
-        initiate(options.mode);
-    } else {
-        initiate();
+    function cacheFactory(config) {
+        Erika.cache(options.cache || {'type': 'default'});
     }
 
-
-
+    initiate();
     return {
         'filters': filters,
         'factory': factory,
@@ -351,5 +401,7 @@ var Erika = (function (options) {
         'constants': constants,
         'module': module,
         'version':  version,
+        'config' : resources.config,
+        'cacheFactory' : cacheFactory,
     };
 });

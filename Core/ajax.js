@@ -49,14 +49,13 @@ window.Erika.ajax = (function () {
             } : 
             
             function (e) {
-                console.log('error callback is not a function, using default error handler');
+                console.error('error callback is not a function, using default error handler');
                 defaultOnError(this);
             };
 
         if (method.toUpperCase() === 'GET') {
 
             url = url + '?' + buildQueryString(data);
-           
             xmlhttp.open("GET", url, true);
             sendHeaders(xmlhttp, headers);
             xmlhttp.send();
@@ -133,7 +132,7 @@ window.Erika.ajax = (function () {
     function buildQueryString(params) {
         var esc = encodeURIComponent;
         var query = Object.keys(params)
-                    .map(function(k) { esc(k) + '=' + esc(params[k]);})
+                    .map(function(k) { return  esc(k) + '=' + esc(params[k]);})   
                     .join('&');
         return query;
     }
