@@ -379,7 +379,7 @@ var Erika = (function (options) {
     }
 
     function version() {
-        return '0.0.5 alpha';
+        return '0.0.6 alpha';
     }
 
     // for internal debug
@@ -392,6 +392,7 @@ var Erika = (function (options) {
     }
 
     initiate();
+    
     return {
         'filters': filters,
         'factory': factory,
