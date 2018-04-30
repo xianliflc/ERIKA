@@ -150,3 +150,36 @@ Erika.template.render(
     document.getElementById('main')
 );
 ```
+
+##DOM
+
+Get DOM
+```javascript
+
+var dom = Erika.Dom.get('#main-content');
+```
+
+Available prototypes:
+
+| Function        | Parameters           | Description  |
+| ------------- |:-------------:| -----:|
+| forEach     | `function` callback |  |
+| map     | `function` callback      |    |
+| mapOne | `function `callback     |     |
+| text | `string` text     |     |
+| html | `string` html     |     |
+| addClass | `array` classes     |     |
+| removeClass | `array` classes     |     |
+| remove | null     |     |
+| hide | null     |     |
+| show |    null  |     |
+| fadeIn | `int` time     |     |
+| fadeout | `int` time     |     |
+| toggleClass | `string` class     |     |
+| toggleClasses | `array` classes     |     |
+| attr | `string` key, `string` value     |     |
+| append | `object` elements     |     |
+| prepend | `object` elements     |     |
+| on | `string` event, `function` callback    |     |
+| off | `string` event     |     |
+| version | null     |     |

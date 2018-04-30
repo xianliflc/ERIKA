@@ -94,6 +94,21 @@ Erika.Dom = (function (options) {
             });
         },
 
+        toggleClass: function(clas) {
+            return this.forEach(function (el) {
+                el.classList.toggle(clas);
+            });
+        },
+
+        toggleClasses: function(clas) {
+            return this.forEach(function (el) {
+                clas.forEach(function (c) {
+                    el.classList.toggle(c);
+                });
+                
+            });
+        },
+
         attr: function (attr, val) {
             if (typeof val !== 'undefined') {
                 return this.forEach(function (el) {
