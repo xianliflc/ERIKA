@@ -75,6 +75,77 @@ window.Erika = window.Erika || {};
             };
         };
 
+        var session_st = function() {
+            return {
+                has: function(key, index) {
+                    index = typeof index === 'string' ? index : '';
+                    if (index !== '') {
+                        var temp = {};
+                        return sessionStorage.getItem(index) !== null && (temp = JSON.parse(sessionStorage.getItem(index))) && temp.hasOwnProperty(key);
+                    } else {
+                        return sessionStorage.getItem(key) !== null;
+                    }
+                    
+                },
+                get: function(key,  default_value, index) {
+                    index = typeof index === 'string' ? index : '';
+                    
+                    if (index !== '') {
+                        
+                        return this.has(key, index)? (function () {
+                            var temp = JSON.parse(sessionStorage.getItem(index));
+                            return temp[key];
+                        })() : default_value;
+                    } else {
+                        return this.has(key)? sessionStorage.getItem(key) : default_value; 
+                    }
+
+                },
+
+                set: function(key, value, index) {
+                    index = typeof index === 'string' ? index : '';
+                    if (index !== '') {
+                        var temp = sessionStorage.getItem(index) !== null ? JSON.parse(sessionStorage.getItem(index)) : {};
+                        temp[key] = value;
+                        sessionStorage.setItem(index, JSON.stringify(temp)); 
+                    } else {
+                        sessionStorage.setItem(key, typeof value === 'object' ? JSON.stringify(value) : value);
+                    }
+                    
+                },
+
+                remove: function(key, index) {
+                    index = typeof index === 'string' ? index : '';
+                    if (index !== '') {
+                        var temp = sessionStorage.getItem(index) !== null ? JSON.parse(sessionStorage.getItem(index)) : {};
+                        temp = temp.hasOwnProperty(key) ? (function(){ 
+                            temp[key] = undefined;
+                            delete temp[key];
+                            return temp;
+                        })() : temp;
+                        sessionStorage.setItem(index, JSON.stringify(temp)); 
+                    } else {
+                        sessionStorage.removeItem(key);
+                    }
+                },
+
+                removeAll: function(index) {
+                    index = typeof index === 'string' ? index : '';
+                    if (index !== '') {
+                        this.remove(index);
+                    } else {
+                        sessionStorage.clear();
+                    }
+                    
+                },
+
+                migrateTo: function() {
+                    
+                }
+
+            };
+        };
+
         var property_st = function(c) {
 
             return {
@@ -141,8 +212,10 @@ window.Erika = window.Erika || {};
             };
         };
 
-        if (opt.hasOwnProperty('type') && opt.type.toLowerCase() === 'localstorage') {
+        if (opt.hasOwnProperty('type') && (opt.type.toLowerCase() === 'localstorage' || opt.type.toLowerCase() === 'local') ) {
             return local_st();
+        } else if (opt.hasOwnProperty('type') && (opt.type.toLowerCase() === 'session' || opt.type.toLowerCase() === 'sessionstorage') ) {
+            return session_st();
         } else {
             Erika.storage = Erika.storage || {
                 'templates': {},

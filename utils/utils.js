@@ -1,4 +1,6 @@
-var utils = (function () {
+window.Erika = window.Erika || {};
+
+(function (E) {
 
     'use strict';
 
@@ -32,17 +34,6 @@ var utils = (function () {
         'indeOf': libs.indexOf
     };
 
-    if (typeof window.erika !== undefined) {
-        if (typeof window.erika.utils !== undefined) {
-            // todo some extra logic
-        }
-    } else {
-        console.error("ERROR: ERIKA is not defined");
-        return;
-    }
-
-    window.erika.utils = utils;
-
-    // if you want a return;
-    return window.erika;
-});
+    E.utils = utils;
+    
+})(Erika || {});
