@@ -23,11 +23,14 @@ Erika.StateMachine = (function(){
         this.isPause = false;
         var obj = this;
         states.forEach(function(state, index)  {
-            if(Number.isInteger(state.value) && typeof state.function === 'function' ) {
+            if(state.stop === true || (state.stop !== true && typeof state.function === 'function') ) {
                
                obj.values.push(state.value);
                obj.state_names.push(state.name);
                state.stop = state.hasOwnProperty('stop')? state.stop : false;
+               if (state.stop === true) {
+                   obj['on'+state.name] = typeof state.function === 'function' ? state.function : function(){};
+               }
                obj.states[state.name] = state;
             }
         });
@@ -73,14 +76,15 @@ Erika.StateMachine = (function(){
         on: function(state, func) {
             if (this.state_names.indexOf(state) !== -1) {
                 var wrap = function(obj, cb) {
-                    obj.nextState = obj.states[state].function.apply(obj, obj.dependencies);
+                    var theFunction = obj.states[state].stop === true ? obj['on'+state] : obj.states[state].function;
+                    obj.nextState = theFunction.apply(obj, obj.dependencies);
                     if (typeof cb === 'function') {
                         cb(); 
                     }
                 };
                 wrap(this,func);
             } else {
-                console.error('invalid state');
+                console.error('invalid state: ' + state);
                 this.stop();
             }
             
