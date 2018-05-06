@@ -18,7 +18,9 @@ Erika.StateMachine = (function(){
         this.dependencies = {};
         this.nextState = null;
         this.start = start;
-        this.hasStarted = false;
+        this.prevState = null;
+        this.landed = false;
+        this.isPause = false;
         var obj = this;
         states.forEach(function(state, index)  {
             if(Number.isInteger(state.value) && typeof state.function === 'function' ) {
@@ -47,8 +49,13 @@ Erika.StateMachine = (function(){
             this.hasStarted = true;
             this._tick = setInterval(
                 function(){
-                    if(obj.state_names.indexOf(obj.currentState) !== -1 && obj.states[obj.currentState].function !== undefined) {
+                    if (obj.isPause !== false) {
+                        return;
+                    }
+
+                    if(obj.state_names.indexOf(obj.currentState) !== -1 && obj.prevState !== obj.currentState) {
                         obj.on(obj.currentState, function(){
+                            obj.prevState = obj.currentState;
                             obj.currentState = obj.nextState;
                             obj.nextState = null;
                             
@@ -70,7 +77,6 @@ Erika.StateMachine = (function(){
                     if (typeof cb === 'function') {
                         cb(); 
                     }
-                    obj.states[state].function = undefined;
                 };
                 wrap(this,func);
             } else {
@@ -113,27 +119,49 @@ Erika.StateMachine = (function(){
         },
 
         // pause the state machine
-        pasue: function() {
+        pause: function(t) {
+
+           if (this.isPause !== false) {
+               return;
+           }
+           
+           if (t !== undefined && Number.isInteger(t)) {
+                var obj = this;
+                this.isPause = setTimeout(function () {
+                    obj.isPause = false;
+                    
+                }, t );
+           } else {              
+               this.isPause = true;
+           }
 
         },
 
         // resume the state machine from pausing
         resume: function() {
 
+            if (this.isPause === false) {
+                return;
+            }
+
+            if (this.isPause === true) {
+                this.isPause = false;
+            } else {
+                clearTimeout(this.isPause);
+                this.isPause = false;
+            }
+            
         },
 
         // get the current state name
         getCurrentState: function() {
-
+            return this.currentState;
         },
 
         // get the current state value
         getCurrentStateValue: function() {
-
+            return this.states[this.currentState].value;
         },
-
-
-        
     };
 
     var create = function (states, start) {
