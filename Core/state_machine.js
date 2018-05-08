@@ -11,7 +11,7 @@ Erika.StateMachine = (function(){
      */
     var State_Machine = function(states, start) {
 
-        this.values = [];
+        this.values = {};
         this.state_names = [];
         this.states = {};
         this.currentState = null;
@@ -21,17 +21,26 @@ Erika.StateMachine = (function(){
         this.prevState = null;
         this.landed = false;
         this.isPause = false;
+        this.currentValue = {};
+        this.prevValue = {};
+        // this.currentBinding = {};
+
         var obj = this;
         states.forEach(function(state, index)  {
             if(state.stop === true || (state.stop !== true && typeof state.function === 'function') ) {
                
-               obj.values.push(state.value);
+               if (state.hasOwnProperty('value')) {
+                   obj.values[state.name] = state.value;
+               }
                obj.state_names.push(state.name);
                state.stop = state.hasOwnProperty('stop')? state.stop : false;
                if (state.stop === true) {
                    obj['on'+state.name] = typeof state.function === 'function' ? state.function : function(){};
                }
                obj.states[state.name] = state;
+            //    if (state.hasOwnProperty('binding') && typeof state.binding === 'object') {
+            //     obj.states[state.name].binding = state.binding;
+            //    }
             }
         });
         if (this.state_names.indexOf(this.start) === -1) {
@@ -48,22 +57,33 @@ Erika.StateMachine = (function(){
                 return;
             }
             this.currentState = this.start;
+            this.currentValue = this.states[this.start].value;
             var obj = this;
+            
             this.hasStarted = true;
+
             this._tick = setInterval(
                 function(){
                     if (obj.isPause !== false) {
                         return;
                     }
+                    //console.log(obj.state_names.indexOf(obj.currentState) !== -1 && (obj.prevState !== obj.currentState || JSON.stringify(obj.prevValue) !== JSON.stringify(obj.currentValue) ));
+                    if(obj.state_names.indexOf(obj.currentState) !== -1 && (obj.prevState !== obj.currentState || JSON.stringify(obj.prevValue) !== JSON.stringify(obj.currentValue) )) {
 
-                    if(obj.state_names.indexOf(obj.currentState) !== -1 && obj.prevState !== obj.currentState) {
-                        obj.on(obj.currentState, function(){
-                            obj.prevState = obj.currentState;
-                            obj.currentState = obj.nextState;
-                            obj.nextState = null;
-                            
-                            if (obj.states[obj.currentState].stop === true) {
-                                obj.stop();
+                        obj.on(obj.currentState, function(state_overwrite){
+                            if (state_overwrite !== obj.currentState && obj.prevState !== obj.currentState) {
+                                // if (obj.states[obj.currentState].hasOwnProperty('binding')) {
+                                //     obj.currentBinding = obj.states[obj.currentState].binding;
+                                // } else {
+                                //     obj.currentBinding = {};
+                                // }
+                                obj.prevState = obj.currentState;
+                                obj.currentState = obj.nextState;
+                                obj.nextState = null;
+                                
+                                if (obj.states[obj.currentState].stop === true) {
+                                    obj.stop();
+                                }
                             }
                         });
                     } 
@@ -76,10 +96,44 @@ Erika.StateMachine = (function(){
         on: function(state, func) {
             if (this.state_names.indexOf(state) !== -1) {
                 var wrap = function(obj, cb) {
+
                     var theFunction = obj.states[state].stop === true ? obj['on'+state] : obj.states[state].function;
-                    obj.nextState = theFunction.apply(obj, obj.dependencies);
+                    obj.prevValue = obj.currentValue;
+                    obj.dependencies = Object.assign({
+                        // 'bind' : function(bindings) {
+                        //     this.watchers = {};
+                        //     obj.currentBinding = typeof bindings ==='object' ? bindings : obj.currentBinding;
+                        //     var this_obj = this;
+                        //     for (var key in obj.currentBinding) {
+                        //         if (obj.currentBinding.hasOwnProperty(key)) {
+                        //             this_obj.watchers[key] = setInterval(function(){
+                        //                 var currentBindingValue = eval(obj.currentBinding[key]);
+                        //                 console.log(eval(obj.currentBinding[key]));
+                        //                 if (this_obj[key] !== currentBindingValue){
+                        //                     this_obj[key] = currentBindingValue;
+                        //                 }
+                        //             }, 50);
+                                    
+                        //         }
+                        //     }
+                        // }
+                        
+        
+                    }, obj.currentValue);
+
+                    var result = theFunction.apply(obj.dependencies);
+                    // if (result && result !== obj.currentState) {
+                    //     for (var key in obj.dependencies.watchers) {
+                    //         if (obj.dependencies.watchers.hasOwnProperty(key)) {
+                    //             clearInterval(obj.dependencies.watchers[key]);
+                                
+                    //         }
+                    //     }
+                    // }
+                    obj.nextState = result || obj.currentState;
+
                     if (typeof cb === 'function') {
-                        cb(); 
+                        cb(result); 
                     }
                 };
                 wrap(this,func);
