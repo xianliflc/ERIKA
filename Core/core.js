@@ -36,7 +36,7 @@ window.Erika = window.Erika || {};
                 return resources.loader_cache[name][list] || {}; 
             }
         } else if (Array.isArray(list)) {
-            array.forEach(function(element){
+            list.forEach(function(element){
                 if (resources.loader_cache[name].hasOwnProperty(element)) {
                     result[element] = resources.loader_cache[name][element];
                 } else {
