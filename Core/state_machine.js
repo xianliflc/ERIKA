@@ -1,6 +1,7 @@
 window.Erika = window.Erika || {};
 
-Erika.StateMachine = (function(){
+//Erika.StateMachine = 
+(function(){
 
     'use strict';
 
@@ -230,8 +231,14 @@ Erika.StateMachine = (function(){
         return  Object.assign({}, sm);
     };
 
-    return {
+    Erika.export('state_machine', {
         'create': create,
         'duplicate': duplicate,
-    };
+    });
+
+    // return {
+    //     'create': create,
+    //     'duplicate': duplicate,
+    // };
+    
 })();

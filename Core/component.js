@@ -26,10 +26,14 @@ Erika.Object = (function(){
     var create = function(name, properties, context) {
         return new Component(name, properties, context);
     };
-    
+
+    var clone = function (compnt) {
+        
+    };
 
     return {
         'create' : create,
+        'clone' : clone
     };
     
 })();

@@ -1,3 +1,7 @@
+var __loader_debug = function(name) {
+    console.log('components: ' + name + ' is loaded');
+};
+
 var Erika = (function (options) {
 
     'use strict';
@@ -14,6 +18,7 @@ var Erika = (function (options) {
             'controller': {},
             'controller_dependancy': {},
             'utils': {},
+            'loader_cache': {},
             'config': options || {},
             // setup mode and root of the app
             'setup': function () {
@@ -407,5 +412,6 @@ var Erika = (function (options) {
         'version':  version,
         'config' : resources.config,
         'cacheFactory' : cacheFactory,
+        
     };
 });

@@ -4,7 +4,68 @@ window.Erika = window.Erika || {};
 (function () {
 
     'use strict';
-    
+    var resources = {
+        'loader_cache' : {}
+    };
+
+    Erika.require = function __require(name, list) {
+        var result = {};
+        if (typeof name !== 'string' ){
+            throw new Error('require name type must be string');
+        }
+        if (typeof name ==='string' && name.trim() === '') {
+            throw new Error('require name is invalid');
+        }
+
+        if (!resources.loader_cache.hasOwnProperty(name)) {
+
+            throw new Error('component ' + name + ' does not exist');
+        }
+
+        if (typeof list === 'string') {
+
+            if (list === '*') {
+                __loader_debug(name);
+                return resources.loader_cache[name] || {};
+            } else {
+                if (!resources.loader_cache[name].hasOwnProperty(list)) {
+
+                    throw new Error('component ' + list + ' does not exist in ' + name);
+                }
+                __loader_debug(name);
+                return resources.loader_cache[name][list] || {}; 
+            }
+        } else if (Array.isArray(list)) {
+            array.forEach(function(element){
+                if (resources.loader_cache[name].hasOwnProperty(element)) {
+                    result[element] = resources.loader_cache[name][element];
+                } else {
+                    throw new Error('component ' + element + ' does not exist in ' + name);
+                }      
+            });
+            __loader_debug(name);
+            return result;
+        }
+        
+    };
+
+    Erika.export = function __export(name, list) {
+
+        // if (!Erika.hasOwnProperty('resources')) {
+        //     Erika.resources = {};
+        // }
+        // var resources = Erika.resources;
+        if (typeof name === 'string' && typeof list === 'object') {
+            if (name.trim() !== '' && !resources.loader_cache.hasOwnProperty(name)) {
+                resources.loader_cache[name] = list;
+            } 
+
+        } else {
+            throw new Error('malformat in export');
+        }
+    };
+
+
     Erika.cache = (function () {
 
         var opt = (Erika.hasOwnProperty('config') && E.config.hasOwnProperty('cache')) ? Erika.config.cache : {'type' : 'default'}; 
