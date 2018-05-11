@@ -223,6 +223,15 @@ Erika.Dom = (function (options) {
             }
         }()),
 
+        trigger: function(event, params) {
+            const eve = new CustomEvent(event, params);
+            //console.log(event, params);
+            return this.forEach(function (el) {
+                el.dispatchEvent(eve);
+            });
+            
+        },
+
         off: (function () {
             if (document.removeEventListener) {
                 return function (evt, fn) {
@@ -244,6 +253,10 @@ Erika.Dom = (function (options) {
                 };
             }
         }()),
+
+        getElement: function(selector) {
+            return get(selector);
+        },
 
         version: '0.0.6 alpha',
 
@@ -283,7 +296,7 @@ Erika.Dom = (function (options) {
     };
 
     return {
-        careate: create,
+        create: create,
         get: get
     };
 

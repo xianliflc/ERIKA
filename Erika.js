@@ -388,7 +388,7 @@ var Erika = (function (options) {
     }
 
     function version() {
-        return '0.0.6 alpha';
+        return '0.0.6';
     }
 
     // for internal debug
