@@ -82,6 +82,13 @@ Erika.Dom = (function (options) {
             });
         },
 
+        hasClass: function(cls) {
+            const el = this[0];
+            const className = " " + cls + " ";
+            return (" " + el.className + " ").replace(/[\n\t]/g, " ").indexOf(className) > -1 ;
+
+        },
+
         removeClass: function (clas) {
             return this.forEach(function (el) {
                 var cs = el.className.split(' '),
@@ -107,6 +114,17 @@ Erika.Dom = (function (options) {
                 });
                 
             });
+        },
+
+        css: function(attr, val) {
+            if (typeof val !== 'undefined') {
+                this[0].style[attr] = val;
+                // console.log(this[0].style);
+                return this;
+            } else {
+                // console.log(this[0].style);
+                return this[0].style[attr];
+            }
         },
 
         attr: function (attr, val) {
