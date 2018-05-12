@@ -119,10 +119,8 @@ Erika.Dom = (function (options) {
         css: function(attr, val) {
             if (typeof val !== 'undefined') {
                 this[0].style[attr] = val;
-                // console.log(this[0].style);
                 return this;
             } else {
-                // console.log(this[0].style);
                 return this[0].style[attr];
             }
         },
@@ -243,7 +241,6 @@ Erika.Dom = (function (options) {
 
         trigger: function(event, params) {
             const eve = new CustomEvent(event, params);
-            //console.log(event, params);
             return this.forEach(function (el) {
                 el.dispatchEvent(eve);
             });
@@ -276,9 +273,7 @@ Erika.Dom = (function (options) {
             return get(selector);
         },
 
-        version: '0.0.6 alpha',
-
-
+        version: '0.0.7',
     };
 
     var get = function (selector) {

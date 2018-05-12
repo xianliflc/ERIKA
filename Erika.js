@@ -127,7 +127,7 @@ var Erika = (function (options) {
                 var current = "/";
                 var fn = function () {
                     if (current !== resources.getFragment()) {
-                        console.log(current, resources.getFragment());
+                        //console.log(current, resources.getFragment());
                         current = resources.getFragment();
                         resources.check(current);
                     }
@@ -322,7 +322,7 @@ var Erika = (function (options) {
                         var last_index = arrayArg.length - 1;
                         var dependancies = arrayArg.slice(0, -1);
                         if (typeof arrayArg[last_index] === "function") {
-                            console.log(api.loadDependancies(dependancies));
+                            //console.log(api.loadDependancies(dependancies));
                             resources['$er'][key.substring(3, key.length)] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
                         } else {
                             console.error("Error: module is not a function");
@@ -339,7 +339,7 @@ var Erika = (function (options) {
                 } else {
                     console.error("Error in module " + key + ": should starts with $er");
                 }
-                console.log(resources);
+                //console.log(resources);
             }
         };
 
@@ -388,7 +388,7 @@ var Erika = (function (options) {
     }
 
     function version() {
-        return '0.0.6';
+        return '0.0.7';
     }
 
     // for internal debug

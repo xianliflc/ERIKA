@@ -52,11 +52,13 @@ window.Erika = window.Erika || {};
 
     State_Machine.prototype = {
         // run the state_machine
-        run: function(interval){
+        run: function(interval) {
+
             if (this.hasStarted === true) {
                 console.error('State Machine has already started');
                 return;
             }
+
             this.currentState = this.start;
             this.currentValue = this.states[this.start].value;
             var obj = this;
@@ -68,8 +70,9 @@ window.Erika = window.Erika || {};
                     if (obj.isPause !== false) {
                         return;
                     }
-                    //console.log(obj.state_names.indexOf(obj.currentState) !== -1 && (obj.prevState !== obj.currentState || JSON.stringify(obj.prevValue) !== JSON.stringify(obj.currentValue) ));
-                    if(obj.state_names.indexOf(obj.currentState) !== -1 && (obj.prevState !== obj.currentState || JSON.stringify(obj.prevValue) !== JSON.stringify(obj.currentValue) )) {
+
+                    if(obj.state_names.indexOf(obj.currentState) !== -1 && 
+                    (obj.prevState !== obj.currentState || JSON.stringify(obj.prevValue) !== JSON.stringify(obj.currentValue) )) {
 
                         obj.on(obj.currentState, function(state_overwrite){
                             if (state_overwrite !== obj.currentState && obj.prevState !== obj.currentState) {
@@ -109,7 +112,7 @@ window.Erika = window.Erika || {};
                         //         if (obj.currentBinding.hasOwnProperty(key)) {
                         //             this_obj.watchers[key] = setInterval(function(){
                         //                 var currentBindingValue = eval(obj.currentBinding[key]);
-                        //                 console.log(eval(obj.currentBinding[key]));
+                        // 
                         //                 if (this_obj[key] !== currentBindingValue){
                         //                     this_obj[key] = currentBindingValue;
                         //                 }

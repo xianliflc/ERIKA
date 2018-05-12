@@ -33,7 +33,6 @@
             if (typeof command !== 'string' || typeof callback !== 'function') {
                 throw new Error('event or callback function is invalid');
             }
-            console.log(this.websocket['on' + command], command);
             if (this.websocket['on' + command] === undefined) {
                 throw new Error ('event handler does not exist');
             }

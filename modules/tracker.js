@@ -42,7 +42,7 @@ erika.module('$erTracker', [ function(){
         addEvent(vars.g, "mousemove", mousemove);
         setInterval(function() {
                     log.push('x= '+wx+', &y= '+wy);
-                    console.log('x= '+wx+', &y= '+wy);
+                    //console.log('x= '+wx+', &y= '+wy);
         }, period);
     };
 
