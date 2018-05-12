@@ -1,3 +1,7 @@
+var __loader_debug = function(name) {
+    console.log('components: ' + name + ' is loaded');
+};
+
 var Erika = (function (options) {
 
     'use strict';
@@ -14,6 +18,7 @@ var Erika = (function (options) {
             'controller': {},
             'controller_dependancy': {},
             'utils': {},
+            'loader_cache': {},
             'config': options || {},
             // setup mode and root of the app
             'setup': function () {
@@ -61,45 +66,49 @@ var Erika = (function (options) {
                     match = hash.match(new RegExp(regex_string));
 
                     if (match) {
-                        var keys_with_type = {};
-                        keys.forEach(function (item, i){
-                             var v = item.split('@');
+                        if (keys !== null && keys.length > 0) {
+                            var keys_with_type = {};
 
-                             keys_with_type[v[0].split('&')[1]] = v[1] !== undefined ? v[1] : ''; 
-                        });
-
-                        var matches = match[1].split('&');
-                        matches.shift();
-                        matches.forEach(function (item, i) {
-                            var arr =item.split('=');
-                            var key = arr[0];
-                            var value = arr[1] !== undefined ? arr[1] : '';
-
-                            if (keys_with_type[key] !== undefined) {
-                                switch(keys_with_type[key]) {
-                                    case 'array':
-                                    case 'object':
-                                        value = JSON.parse(value);
-                                        api.pageDependency(key, value);
-                                        break;
-                                    case 'string':
-                                        api.pageDependency(key, value);
-                                        break;
-                                    case 'integer':
-                                    case 'int':
-                                        value = parseInt(value);
-                                        api.pageDependency(key, value);
-                                        break;
-                                    case 'float':
-                                        api.pageDependency(key, value);
-                                        value = parseFloat(value);
-                                        break;
-                                    default:
-                                        break;
+                            keys.forEach(function (item, i){
+                                 var v = item.split('@');
+    
+                                 keys_with_type[v[0].split('&')[1]] = v[1] !== undefined ? v[1] : ''; 
+                            });
+    
+                            var matches = match[1].split('&');
+                            matches.shift();
+                            matches.forEach(function (item, i) {
+                                var arr =item.split('=');
+                                var key = arr[0];
+                                var value = arr[1] !== undefined ? arr[1] : '';
+    
+                                if (keys_with_type[key] !== undefined) {
+                                    switch(keys_with_type[key]) {
+                                        case 'array':
+                                        case 'object':
+                                            value = JSON.parse(value);
+                                            api.pageDependency(key, value);
+                                            break;
+                                        case 'string':
+                                            api.pageDependency(key, value);
+                                            break;
+                                        case 'integer':
+                                        case 'int':
+                                            value = parseInt(value);
+                                            api.pageDependency(key, value);
+                                            break;
+                                        case 'float':
+                                            api.pageDependency(key, value);
+                                            value = parseFloat(value);
+                                            break;
+                                        default:
+                                            break;
+                                    }
                                 }
-                            }
-                            
-                        });
+                                
+                            });                           
+                        }
+
                         
                         var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
                         resources.controller[resources.routes[i].handler].apply(this, LDependancy);
@@ -379,7 +388,7 @@ var Erika = (function (options) {
     }
 
     function version() {
-        return '0.0.5 alpha';
+        return '0.0.6';
     }
 
     // for internal debug
@@ -392,6 +401,7 @@ var Erika = (function (options) {
     }
 
     initiate();
+    
     return {
         'filters': filters,
         'factory': factory,
@@ -402,5 +412,6 @@ var Erika = (function (options) {
         'version':  version,
         'config' : resources.config,
         'cacheFactory' : cacheFactory,
+        
     };
 });

@@ -1,4 +1,6 @@
-var utils = (function () {
+window.Erika = window.Erika || {};
+
+(function (E) {
 
     'use strict';
 
@@ -12,7 +14,21 @@ var utils = (function () {
             return body.indexOf(str) === 0;
         },
 
-        'indexOf': function () {},
+        //Returns true if it is a DOM node
+        'isNode': function isNode(o){
+            return (
+            typeof Node === "object" ? o instanceof Node : 
+            o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName==="string"
+            );
+        },
+    
+        //Returns true if it is a DOM element    
+        'isElement' : function isElement(o){
+            return (
+                typeof HTMLElement === "object" ? o instanceof HTMLElement : //DOM2
+                o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName==="string"
+            );
+        }
     };
 
     if (typeof Array.prototype.indexOf !== 'function') {
@@ -26,23 +42,6 @@ var utils = (function () {
         };
     }
 
-    var utils = {
-        'isArray': libs.isArray,
-        'startsWith': libs.startsWith,
-        'indeOf': libs.indexOf
-    };
-
-    if (typeof window.erika !== undefined) {
-        if (typeof window.erika.utils !== undefined) {
-            // todo some extra logic
-        }
-    } else {
-        console.error("ERROR: ERIKA is not defined");
-        return;
-    }
-
-    window.erika.utils = utils;
-
-    // if you want a return;
-    return window.erika;
-});
+    E.utils = libs;
+    
+})(Erika || {});

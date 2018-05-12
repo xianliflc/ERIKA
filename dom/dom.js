@@ -1,13 +1,27 @@
-var dom = (function (options) {
+window.Erika = window.Erika || {};
+
+Erika.Dom = (function (options) {
 
     'use strict';
-
 
     var Dome = function (els) {
         for (var i = 0; i < els.length; i++) {
             this[i] = els[i];
         }
         this.length = els.length;
+
+        this.config= __config;
+
+        this.setConfig = function(k, v) {
+            if (this.config.hasOwnProperty(k)) {
+                this.config[k] = v;
+            }
+        };
+    };
+
+    var __config = {
+        'default_display' : 'block',
+        'defualt_width' : '100%',
     };
 
     Dome.prototype = {
@@ -22,7 +36,7 @@ var dom = (function (options) {
             for (var i = 0; i < this.length; i++) {
                 results.push(callback.call(this, this[i], i));
             }
-            return results; //.length > 1 ? results : results[0];
+            return results;
         },
 
         mapOne: function (callback) {
@@ -68,16 +82,49 @@ var dom = (function (options) {
             });
         },
 
-        removeClass: function (clazz) {
+        hasClass: function(cls) {
+            const el = this[0];
+            const className = " " + cls + " ";
+            return (" " + el.className + " ").replace(/[\n\t]/g, " ").indexOf(className) > -1 ;
+
+        },
+
+        removeClass: function (clas) {
             return this.forEach(function (el) {
                 var cs = el.className.split(' '),
                     i;
 
-                while ((i = cs.indexOf(clazz)) > -1) {
+                while ((i = cs.indexOf(clas)) > -1) {
                     cs = cs.slice(0, i).concat(cs.slice(++i));
                 }
                 el.className = cs.join(' ');
             });
+        },
+
+        toggleClass: function(clas) {
+            return this.forEach(function (el) {
+                el.classList.toggle(clas);
+            });
+        },
+
+        toggleClasses: function(clas) {
+            return this.forEach(function (el) {
+                clas.forEach(function (c) {
+                    el.classList.toggle(c);
+                });
+                
+            });
+        },
+
+        css: function(attr, val) {
+            if (typeof val !== 'undefined') {
+                this[0].style[attr] = val;
+                // console.log(this[0].style);
+                return this;
+            } else {
+                // console.log(this[0].style);
+                return this[0].style[attr];
+            }
         },
 
         attr: function (attr, val) {
@@ -90,6 +137,64 @@ var dom = (function (options) {
                     return el.getAttribute(attr);
                 });
             }
+        },
+
+        hide: function() {
+            return this.mapOne(function (ele){
+                ele.hidden = true;
+            });
+        },
+
+        show: function() {
+            return this.mapOne(function (ele){
+                ele.hidden = false;
+            });
+        },
+
+        fadeIn: function (time) {
+
+            return this.mapOne(function(el) {
+                el.style.opacity = 0;
+                el.hidden = false;
+                var last = +new Date();
+                var tick = function() {
+                  el.style.opacity = +el.style.opacity + (new Date() - last) / time;
+                  last = +new Date();
+              
+                  if (+el.style.opacity < 1) {
+                    (window.requestAnimationFrame && requestAnimationFrame(tick)) || setTimeout(tick, 16);
+                  }
+                };
+              
+                tick();
+            });
+
+        },
+
+        fadeOut: function (time) {
+
+            return this.mapOne(function(el) {
+
+                var last = +new Date();
+                var tick = function() {
+                  el.style.opacity = el.style.opacity - (new Date() - last) / time;
+                  last = +new Date();
+              
+                  if (el.style.opacity > 0) {
+                    (window.requestAnimationFrame && requestAnimationFrame(tick)) || setTimeout(tick, 16);
+                  } else {
+                    el.hidden = true;
+                  }
+                };
+              
+                tick();
+            });
+
+        },
+
+        insertAfter:  function (newNode, referenceNode) {
+            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+            return this;
         },
 
         append: function (els) {
@@ -115,13 +220,13 @@ var dom = (function (options) {
         },
 
         on: (function () {
-            if (document.addEventListener) {
+            if (typeof document.addEventListener === 'function') {
                 return function (evt, fn) {
                     return this.forEach(function (el) {
                         el.addEventListener(evt, fn, false);
                     });
                 };
-            } else if (document.attachEvent) {
+            } else if (typeof document.attachEvent === 'function') {
                 return function (evt, fn) {
                     return this.forEach(function (el) {
                         el.attachEvent("on" + evt, fn);
@@ -135,6 +240,15 @@ var dom = (function (options) {
                 };
             }
         }()),
+
+        trigger: function(event, params) {
+            const eve = new CustomEvent(event, params);
+            //console.log(event, params);
+            return this.forEach(function (el) {
+                el.dispatchEvent(eve);
+            });
+            
+        },
 
         off: (function () {
             if (document.removeEventListener) {
@@ -158,26 +272,14 @@ var dom = (function (options) {
             }
         }()),
 
-        version: '1.0.0 beta 1',
+        getElement: function(selector) {
+            return get(selector);
+        },
+
+        version: '0.0.6 alpha',
 
 
     };
-
-    function setDom(dom) {
-        if (typeof window.erika !== undefined) {
-            if (typeof erika.utils !== undefined) {
-                // todo some extra logic
-            }
-        } else {
-            console.error("ERROR: ERIKA is not defined");
-            return;
-        }
-
-        window.erika.dom = dom;
-
-        // if you want a return;
-        return window.erika.dom;
-    }
 
     var get = function (selector) {
         var els;
@@ -188,8 +290,9 @@ var dom = (function (options) {
         } else {
             els = [selector];
         }
-        return setDom(new Dome(els));
+        return new Dome(els);
     };
+    
     var create = function (tagName, attrs) {
         var el = new Dome([document.createElement(tagName)]);
         if (attrs) {
@@ -207,11 +310,12 @@ var dom = (function (options) {
                 }
             }
         }
-        return setDom(el);
+        return el;
     };
 
     return {
-        careate: create,
+        create: create,
         get: get
     };
-});
+
+})();
