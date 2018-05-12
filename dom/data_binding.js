@@ -7,7 +7,7 @@
     // Data Model
     class DataModel {
 
-        constructor (name, handlerList) {
+        constructor (name, handlerList, views) {
 
             var elements = document.querySelectorAll('[erika-model='+name+']');
 
@@ -25,8 +25,19 @@
             this.properties = {};
             this._event_cache = [];
             this.isDelayed = false;
+            this.name = name;
             
             handlerList = typeof handlerList === 'object' ? handlerList : {};
+            views = typeof views === 'object' ? views : {};
+
+            for (const key in views) {
+                if (views.hasOwnProperty(key)) {
+                    this.views[key] = new DataView(key, views[key].function? views[key].function : false, views[key].options? views[key].options : false);
+                }
+            }
+
+            views = undefined;
+
             var self = this;
             for (const key in properties) {
                 
@@ -42,7 +53,7 @@
                             handlerList[property_name].hasOwnProperty(e) && 
                             typeof handlerList[property_name][e] === 'function' &&
                             self.isDelayed === false) {
-                                handlerList[property_name][e].apply(null, event);
+                                handlerList[property_name][e].apply({'views' : self.views}, event);
                             } else {
                                 self._event_cache.push({
                                     'event' : event,
@@ -64,7 +75,7 @@
                 var self = this;
                 this.properties[property_name].on(event, function(e) {
                     if (self.isDelayed === false) {
-                        handler.apply(null, e);
+                        handler.apply({'views' : self.views}, e);
                     } else {
                         self._event_cache.push({
                             'event' : e,
@@ -77,12 +88,20 @@
             return this;
         }
 
-        addView() {
-
+        addView(name, func, self) {
+            self = self || this ;
+            self.views[name] = new DataView(name, func);
+            return self;
         }
 
-        sync() {
-
+        addViews(list) {
+            for (const key in list) {
+                if (list.hasOwnProperty(key)) {
+                    const element = list[key];
+                    this.addView(list[key].name, list[key].function);
+                }
+            }
+            return this;
         }
 
         /**
@@ -124,22 +143,40 @@
 
     class DataView {
         
-        constructor() {
+        constructor(select, fn) {
+            
+            var elements = document.querySelectorAll('[erika-view='+select+']');
+
+            if (elements.length < 1) {
+                throw new Error ("data view for name " + name + " not found");
+            } 
+            else if (elements.length > 1) {
+                throw new Error('data view for name ' + name + ' must be unique');
+            }
+
+            this.view = Erika.Dom.get(select);
+            if (typeof fn === 'function') {
+                var self = this;
+                this.render = function(data, callback){
+                    
+                    if (typeof callback === 'function') {
+                        callback(fn.apply(self,data));
+                    } else {
+                        fn.apply(self,data);
+                    }
+                    return self;
+                };
+            }
 
         }
 
-        render() {
-
+        render(data, callback) {
+            throw new Error('render() has to be implmented');
         }
 
-        sync() {
-
+        wait() {
+            return this;
         }
-
-        delay() {
-
-        }
-
     }
 
     Erika.export('data_binding', {

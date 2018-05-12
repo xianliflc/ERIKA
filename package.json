@@ -1,6 +1,6 @@
 {
   "name": "erika",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-concat": "latest",
@@ -9,7 +9,7 @@
     "grunt-contrib-jshint": "latest",
     "grunt-contrib-less": "latest",
     "grunt-contrib-uglify": "latest",
-    "grunt-contrib-watch": "latest",
+    "grunt-contrib-watch": "^1.0.1",
     "grunt-sass": "^2.1.0",
     "jshint-stylish": "latest"
   }
