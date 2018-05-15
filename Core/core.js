@@ -298,5 +298,184 @@ window.Erika = window.Erika || {};
 
     })();
 
+
+    Erika.assets = (function(){
+
+        var styles = {};
+        var fonts = {};
+        var scripts = {}; //scripts to load
+        var images = {}; // images to load
+        var total_scripts_to_load = 0;
+        var loaded_scripts = 0;
+        var total_images_to_load = 0;
+        var loaded_images = 0;
+        var validate = function(type) {
+            if(type.trim().toLowerCase() === 'script') {
+                return total_scripts_to_load === loaded_scripts;
+            } else if (type.trim().toLowerCase() === 'image') {
+                return total_images_to_load === loaded_images;
+            } else if (type.trim().toLowerCase() === 'css') {
+                //return;
+            } else if (type.trim().toLowerCase() === 'font') {
+                //return ;
+            }
+
+            return false;
+        };
+
+        var ScriptLoader = function() {
+
+            var loadError = function(oError) {
+                throw new URIError("The script " + oError.target.src + " didn't load correctly.");
+            };
+
+            var loadSuccess = function(event) {
+                console.log("The script " + event.path[0].src  + " loaded correctly.");
+            };
+
+            var create = function (url, onsuccess, onerror) {
+                var newScript = document.createElement("script");
+                newScript.onerror = typeof onerror === 'function' ? onerror : loadError;
+                if (typeof onsuccess === 'function') { 
+                    newScript.onload = function(event) {
+                        onsuccess(event);
+                        scripts[url] = undefined;
+                        loaded_scripts++;
+                        delete scripts[url];
+                    };    
+                } else {
+                    newScript.onload = function(event) {
+                        loadSuccess(event);
+                        scripts[url] = undefined;
+                        loaded_scripts++;
+                        delete scripts[url];
+                    };
+                }
+                
+                //newScript.src = url;
+                if(!scripts.hasOwnProperty(url)) {
+                    total_scripts_to_load++;
+                }
+                scripts[url] = newScript;
+            };
+
+            var sync = function() {
+                for (const key in scripts) {
+                    if (scripts.hasOwnProperty(key)) {
+                        const element = scripts[key];
+                        element.src = key;
+                        document.head.appendChild(element);
+                    }
+                }
+                
+            };
+
+            var async = function() {
+                if (document.currentScript !== null) {
+                    for (const key in scripts) {
+                        if (scripts.hasOwnProperty(key)) {
+                            const element = scripts[key];
+                            element.src = key;
+                            document.currentScript.parentNode.insertBefore(element, document.currentScript);
+                        }
+                    }
+                } else {
+                    sync();
+                }
+                
+            };
+
+            return {
+                sync : sync,
+                async: async,
+                create: create,
+            };
+        };
+
+
+        var ImageLoader = function() {
+
+            var loadError = function(oError) {
+                throw new URIError("The image " + oError.target.src + " didn't load correctly.");
+            };
+
+            var loadSuccess = function(event) {
+                if ('naturalHeight' in this) {
+                    if (this.naturalHeight + this.naturalWidth === 0) {
+                        this.onerror();
+                        return;
+                    }
+                } else if (this.width + this.height == 0) {
+                    this.onerror();
+                    return;
+                }
+                console.log("The image " + event.path[0].src + " loaded correctly.");
+            };
+
+            var create = function (url, onsuccess, onerror) {
+                var image = new Image();
+                image.onerror = typeof onerror === 'function' ? onerror : loadError;
+                if (typeof onsuccess === 'function') { 
+                    image.onload = function(event) {
+                        if ('naturalHeight' in this) {
+                            if (this.naturalHeight + this.naturalWidth === 0) {
+                                this.onerror();
+                                return;
+                            }
+                        } else if (this.width + this.height == 0) {
+                            this.onerror();
+                            return;
+                        }
+
+                        // document.body.appendChild(image);
+                        onsuccess(event);
+                        images[url] = undefined;
+                        loaded_images++;
+                        delete images[url];
+                    };    
+                } else {
+                    image.onload = function(event) {
+                        loadSuccess(event);
+                        images[url] = undefined;
+                        loaded_images++;
+                        delete images[url];
+                    };
+                }
+                
+                //image.src = url;
+                if (!images.hasOwnProperty(url)) {
+                    total_images_to_load++;
+                }
+                images[url] = image;
+            };
+
+            var sync = function() {
+                for (const key in images) {
+                    if (images.hasOwnProperty(key)) {
+                        images[key].src = key;
+                        //document.head.appendChild(element);
+                    }
+                }
+                
+            };
+
+            var async = function() {
+                sync();
+            };
+
+            return {
+                sync : sync,
+                async: async,
+                create: create,
+            };
+        };
+
+        return {
+            validate: validate,
+            script: ScriptLoader,
+            image: ImageLoader,
+            
+        };
+    })();
 })();
 
