@@ -323,9 +323,13 @@ window.Erika = window.Erika || {};
             return false;
         };
 
+        /**
+         * Loader for scripts
+         */
         var ScriptLoader = function() {
 
             var loadError = function(oError) {
+                hasError=true;
                 throw new URIError("The script " + oError.target.src + " didn't load correctly.");
             };
 
@@ -333,9 +337,11 @@ window.Erika = window.Erika || {};
                 console.log("The script " + event.path[0].src  + " loaded correctly.");
             };
 
+            var hasError = false;
+
             var create = function (url, onsuccess, onerror) {
                 var newScript = document.createElement("script");
-                newScript.onerror = typeof onerror === 'function' ? onerror : loadError;
+                newScript.onerror = typeof onerror === 'function' ? function(event){hasError=true; onerror(event);} : loadError;
                 if (typeof onsuccess === 'function') { 
                     newScript.onload = function(event) {
                         onsuccess(event);
@@ -393,6 +399,9 @@ window.Erika = window.Erika || {};
         };
 
 
+        /**
+         * Loader for Images
+         */
         var ImageLoader = function() {
 
             var loadError = function(oError) {
@@ -463,6 +472,7 @@ window.Erika = window.Erika || {};
                 sync();
             };
 
+            
             return {
                 sync : sync,
                 async: async,

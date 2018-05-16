@@ -375,3 +375,24 @@ model.wait(7000);
 
 
 ```
+
+## Loader and Promise
+
+```javascript
+
+var fn = new Erika.Promise(function (resolve, reject) {
+    var script = Erika.assets.script();
+    script.create('https://code.jquery.com/jquery-3.3.1.js');
+    setTimeout(function () {
+        script.async();
+        //resolve('oooook~');
+        reject('fail');
+    }, 1500)
+})
+.then(function (data) {
+    console.log('success: ', data)
+}, function (err) {
+    console.log('err: ', err)
+})
+
+```
