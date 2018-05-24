@@ -169,7 +169,7 @@ var Erika = (function (options) {
                         console.log(api.loadDependancies(dependancies));
 
                         // use arrayargs to call the dependency
-                        resources.factory[key] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
+                        resources.factory[key] = arrayArg[last_index].apply({}, api.loadDependancies(dependancies)); // arrayArg[last_index];
                     } else {
                         console.log("Error: factory is not a function");
                     }
@@ -255,7 +255,7 @@ var Erika = (function (options) {
                             if (resources.factory.hasOwnProperty(arrayArg[iter])) {
                                 dependancy.push(api.loadDependancy(arrayArg[iter]));
                             } else {
-                                //look in constants in modules
+                                //look in constants in resources
                                 if (resources.constants.hasOwnProperty(arrayArg[iter])) {
                                     dependancy.push(api.loadConstant(arrayArg[iter]));
                                 } else {
@@ -323,13 +323,13 @@ var Erika = (function (options) {
                         var dependancies = arrayArg.slice(0, -1);
                         if (typeof arrayArg[last_index] === "function") {
                             //console.log(api.loadDependancies(dependancies));
-                            resources['$er'][key.substring(3, key.length)] = arrayArg[last_index].apply(this, api.loadDependancies(dependancies)); // arrayArg[last_index];
+                            resources['$er'][key.substring(3, key.length)] = arrayArg[last_index].apply(module_dependecy, api.loadDependancies(dependancies)); // arrayArg[last_index];
                         } else {
                             console.error("Error: module is not a function");
                         }
                     } else if (arrayArg.length == 1) {
                         if (typeof arrayArg[0] === "function") {
-                            resources['$er'][key.substring(3, key.length)] = arrayArg[0].apply(this, []);
+                            resources['$er'][key.substring(3, key.length)] = arrayArg[0].apply(module_dependecy, []);
                         } else {
                             console.error("Error: module is not a function");
                         }
@@ -343,6 +343,39 @@ var Erika = (function (options) {
             }
         };
 
+    var module_dependecy = {
+        'clone': function() {
+            var c = {};
+            for (var i in this) {
+                if (typeof this[i] === "object") {
+                    c[i] = (this[i].constructor == Array) ? [] : {};
+                    this.clone(this[i], c[i]);
+                } else {
+                    c[i] = this[i];
+                }
+            }
+            return c;
+        },
+
+        'combine': function(obj) {
+            if (typeof obj === 'object') {
+                for (const key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        this[key] = obj[key];
+                        
+                    }
+                }
+            } else if (Array.isArray(obj)) {
+                var self = this;
+                obj.forEach(function(item, index) {
+                    self[index] = item;
+                });
+            } else {
+                //
+            }
+        },
+
+    };
 
     function filters() {
         api.filters(arguments[0], arguments[1]);
@@ -389,11 +422,6 @@ var Erika = (function (options) {
 
     function version() {
         return '0.0.7';
-    }
-
-    // for internal debug
-    function printFactories() {
-        console.log(resources.factory);
     }
 
     function cacheFactory(config) {

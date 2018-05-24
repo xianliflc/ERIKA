@@ -18,7 +18,9 @@ Erika.Object = (function(){
         }
 
         use(extra_context) {
-            this.context = Object.assign(this.context, extra_context);
+            if (extra_context !== null && extra_context instanceof Object) {
+                this.context = Object.assign(this.context, extra_context);
+            }
             return this;
         }
     }

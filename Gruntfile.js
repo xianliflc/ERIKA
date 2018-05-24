@@ -1,8 +1,8 @@
 module.exports = function (grunt) {
 
     var coreFile = 'Erika.js';
-    var resourceFiles = [coreFile, 'Core/*.js', 'utils/*.js', 'dom/*.js'];
-    var allFiles = ['Gruntfile.js', coreFile, 'Core/*.js', 'utils/*.js', 'dom/*.js'];
+    var resourceFiles = [coreFile, 'Core/*.js', 'utils/*.js', 'dom/*.js', 'components/*.js', 'components/*/*.js'];
+    var allFiles = ['Gruntfile.js', coreFile, 'Core/*.js', 'utils/*.js', 'dom/*.js', 'components/*.js', 'components/*/*.js'];
     var devDir = 'dev/';
     var tmpDir = 'tmp/';
     var version = '<%= pkg.version %>';

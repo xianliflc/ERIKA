@@ -33,7 +33,9 @@ window.Erika = window.Erika || {};
                 self.status = 'rejected';
                 self.failVal = val;
                 self.onRejectedList.forEach(function(fn, index){
-                    fn();
+                    if (typeof fn === 'function') {
+                        fn();
+                    }
                     self.onRejectedList[index] = undefined;
                     delete self.onRejectedList[index];
                 });
@@ -49,21 +51,21 @@ window.Erika = window.Erika || {};
 
     Erika.Promise.prototype.then = function (onFulfilled, onRejected) {
 
-        var _this = this;
+        var self = this;
     
-        if ( _this.status === 'resolved' ) {
-            return onFulfilled(_this.successVal);
+        if ( self.status === 'resolved' ) {
+            return onFulfilled(self.successVal);
         }
-        if ( _this.status === 'rejected' ) {
-            return onRejected(_this.failVal);
+        if ( self.status === 'rejected' ) {
+            return onRejected(self.failVal);
         }
 
-        if ( _this.status === 'pending' ) {
-            _this.onFulfilledList.push(function () {
-                onFulfilled(_this.successVal);
+        if ( self.status === 'pending' ) {
+            self.onFulfilledList.push(function () {
+                onFulfilled(self.successVal);
             });
-            _this.onRejectedList.push(function () {
-                onRejected(_this.failVal);
+            self.onRejectedList.push(function () {
+                onRejected(self.failVal);
             });
             return this;
         }
