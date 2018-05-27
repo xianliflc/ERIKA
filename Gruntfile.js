@@ -1,8 +1,10 @@
 module.exports = function (grunt) {
 
     var coreFile = 'Erika.js';
-    var resourceFiles = [coreFile, 'Core/*.js', 'utils/*.js', 'dom/*.js', 'components/*.js', 'components/*/*.js'];
-    var allFiles = ['Gruntfile.js', coreFile, 'Core/*.js', 'utils/*.js', 'dom/*.js', 'components/*.js', 'components/*/*.js'];
+    var components = ['wbl', 'event'];
+    var subcomponents = [];
+    var resourceFiles = [coreFile, 'Core/*.js', 'utils/*.js', 'dom/*.js', 'components/*.js'];
+    var allFiles = ['Gruntfile.js', coreFile, 'Core/*.js', 'utils/*.js', 'dom/*.js', 'components/*.js'];
     var devDir = 'dev/';
     var tmpDir = 'tmp/';
     var version = '<%= pkg.version %>';
@@ -11,7 +13,14 @@ module.exports = function (grunt) {
     var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %> \n* BY Xian Li<kagurahun@gmail.com>*/';
 
+    components.forEach(function(component, index){
+        components[index] = 'components/' + components[index] + '/*.js';
+        subcomponents.push('components/' + components[index] + '/*/*.js');
+    });
 
+    resourceFiles = resourceFiles.concat(components, subcomponents);
+    allFiles = allFiles.concat(components, subcomponents);
+    
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
