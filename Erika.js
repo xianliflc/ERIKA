@@ -2,7 +2,7 @@ var __loader_debug = function(name) {
     console.log('components: ' + name + ' is loaded');
 };
 
-var Erika = (function (options) {
+var Erika = (function () {
 
     'use strict';
 
@@ -10,6 +10,7 @@ var Erika = (function (options) {
             'filters': {},
             'constants': {},
             'factory': {},
+            'functions' : {},
             '$er': {},
             'mode': null,
             'root': '/',
@@ -17,12 +18,10 @@ var Erika = (function (options) {
             'page' : {},
             'controller': {},
             'controller_dependancy': {},
-            'utils': {},
-            'loader_cache': {},
-            'config': options || {},
+            'config': {},
             // setup mode and root of the app
-            'setup': function () {
-                
+            'setup': function (options) {
+                resources.config = options || {};
                 resources.mode = options && options.mode && options.mode === 'history' &&
                     !!(history.pushState) ? 'history' : 'hash';
                 resources.root = (options && options.root) ? '/' + resources.clearSlashes(options.root) + '/' : '/';
@@ -169,7 +168,7 @@ var Erika = (function (options) {
                         console.log(api.loadDependancies(dependancies));
 
                         // use arrayargs to call the dependency
-                        resources.factory[key] = arrayArg[last_index].apply({}, api.loadDependancies(dependancies)); // arrayArg[last_index];
+                        resources.factory[key] = arrayArg[last_index].apply(resources.functions, api.loadDependancies(dependancies)); // arrayArg[last_index];
                     } else {
                         console.log("Error: factory is not a function");
                     }
@@ -179,7 +178,7 @@ var Erika = (function (options) {
                 else if (arrayArg.length == 1) {
                     if (typeof arrayArg[0] === "function") {
                         console.log("- null dependency");
-                        resources.factory[key] = arrayArg[0].apply(this, []);
+                        resources.factory[key] = arrayArg[0].apply(resources.functions, []);
                     } else {
                         console.log("Error: factory is not a function");
                     }
@@ -344,36 +343,48 @@ var Erika = (function (options) {
         };
 
     var module_dependecy = {
-        'clone': function() {
+        'clone': function(a) {
+            a = typeof a === 'object' ? a : this;
             var c = {};
-            for (var i in this) {
-                if (typeof this[i] === "object") {
-                    c[i] = (this[i].constructor == Array) ? [] : {};
-                    this.clone(this[i], c[i]);
+            for (var i in a) {
+
+                if (i === '__proto__') {
+                    continue;
+                }
+
+                if (i in a.__proto__) {
+                    continue;
+                }
+                if (typeof a[i] === "object") {
+                    c[i] = (a[i].constructor == Array) ? [] : {};
+                    c[i] = a.clone(a[i]);
                 } else {
-                    c[i] = this[i];
+                    c[i] = a[i];
                 }
             }
+            c.__proto__ = a.__proto__;
+            
+            //const c = Object.assign({}, a);
             return c;
         },
 
-        'combine': function(obj) {
+        'combine': function(t, obj) {
             if (typeof obj === 'object') {
                 for (const key in obj) {
                     if (obj.hasOwnProperty(key)) {
-                        this[key] = obj[key];
+                        t[key] = obj[key];
                         
                     }
                 }
             } else if (Array.isArray(obj)) {
-                var self = this;
+                var self = t;
                 obj.forEach(function(item, index) {
                     self[index] = item;
                 });
             } else {
                 //
             }
-        },
+        }
 
     };
 
@@ -401,8 +412,8 @@ var Erika = (function (options) {
         api.module(arguments[0], arguments[1]);
     }
 
-    function initiate() {
-        resources.setup();
+    function init(options) {
+        resources.setup(options);
 
         resources.listen();
 
@@ -412,24 +423,12 @@ var Erika = (function (options) {
                 return this.indexOf(str) == 0;
             };
         }
-
-        build();
-    }
-
-    function build() {
-
     }
 
     function version() {
         return '0.0.7';
     }
 
-    function cacheFactory(config) {
-        Erika.cache(options.cache || {'type': 'default'});
-    }
-
-    initiate();
-    
     return {
         'filters': filters,
         'factory': factory,
@@ -439,7 +438,8 @@ var Erika = (function (options) {
         'module': module,
         'version':  version,
         'config' : resources.config,
-        'cacheFactory' : cacheFactory,
+        'init' : init,
+        'lib' : resources.functions
         
     };
-});
+})();

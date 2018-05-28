@@ -68,7 +68,7 @@ window.Erika = window.Erika || {};
 
     Erika.cache = (function () {
 
-        var opt = (Erika.hasOwnProperty('config') && E.config.hasOwnProperty('cache')) ? Erika.config.cache : {'type' : 'default'}; 
+        var opt = (Erika.hasOwnProperty('config') && Erika.config.hasOwnProperty('cache')) ? Erika.config.cache : {'type' : 'default'}; 
         var local_st = function() {
             return {
                 has: function(key, index) {
