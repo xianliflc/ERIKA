@@ -43,6 +43,7 @@ Erika.module('$er_webgl__geometry__point', ['constants', function(constants){
               this.z = z;
               this.mode = '3d';
             }
+            return this;
         }, 
 
         to2D: function(h) {
@@ -54,6 +55,8 @@ Erika.module('$er_webgl__geometry__point', ['constants', function(constants){
               this.z = false;
               this.mode = '2d';
             }
+
+            return this;
         }, 
 
         clone: function() {

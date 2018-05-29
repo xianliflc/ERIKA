@@ -1,7 +1,7 @@
 module.exports = function (grunt) {
 
     var coreFile = 'Erika.js';
-    var components = ['wbl', 'event'];
+    var components = ['wgl', 'wgl/geometry', 'event'];
     var subcomponents = [];
     var resourceFiles = [coreFile, 'Core/*.js', 'utils/*.js', 'dom/*.js', 'components/*.js'];
     var allFiles = ['Gruntfile.js', coreFile, 'Core/*.js', 'utils/*.js', 'dom/*.js', 'components/*.js'];

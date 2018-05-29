@@ -2,7 +2,7 @@ var __loader_debug = function(name) {
     console.log('components: ' + name + ' is loaded');
 };
 
-var Erika = (function () {
+var Erika = Object.assign(window.Erika || {}, (function () {
 
     'use strict';
 
@@ -12,6 +12,7 @@ var Erika = (function () {
             'factory': {},
             'functions' : {},
             '$er': {},
+            'dependency_queue': {},
             'mode': null,
             'root': '/',
             'routes': [],
@@ -110,11 +111,17 @@ var Erika = (function () {
 
                         
                         var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
+                        if (LDependancy === false) {
+                            LDependancy = [];
+                        }
                         resources.controller[resources.routes[i].handler].apply(this, LDependancy);
                         break;
                     } else {
                         //load dependency and call
                         var LDependancy = api.loadDependancies(resources.controller_dependancy[resources.routes[i].handler]);
+                        if (LDependancy === false) {
+                            LDependancy = [];
+                        }
                         resources.controller[resources.routes[i].handler].apply(this, LDependancy);
                         break;
                     }
@@ -165,10 +172,15 @@ var Erika = (function () {
                     var last_index = arrayArg.length - 1;
                     var dependancies = arrayArg.slice(0, -1);
                     if (typeof arrayArg[last_index] === "function") {
-                        console.log(api.loadDependancies(dependancies));
-
+                        //console.log(api.loadDependancies(dependancies));
+                        const result = api.loadDependancies(dependancies);
+                        if (result !== false) {
+                            resources.factory[key] = arrayArg[last_index].apply(resources.functions, result );
+                        } else {
+                            resources.dependency_queue[key] = arrayArg;
+                        }
                         // use arrayargs to call the dependency
-                        resources.factory[key] = arrayArg[last_index].apply(resources.functions, api.loadDependancies(dependancies)); // arrayArg[last_index];
+                         // arrayArg[last_index];
                     } else {
                         console.log("Error: factory is not a function");
                     }
@@ -185,6 +197,8 @@ var Erika = (function () {
                 } else {
                     console.log("Error: factory undefined function");
                 }
+
+                fallback(factory);
             },
 
             // add binding or pth - controller to routes
@@ -247,6 +261,7 @@ var Erika = (function () {
                         //look in modules
                         if (resources.hasOwnProperty(arrayArg[iter])) {
                             dependancy.push(api.loadModule(arrayArg[iter]));
+                            
                         } else if (arrayArg[iter].startsWith('$er') && arrayArg[iter] !== '$er' && resources['$er'].hasOwnProperty(arrayArg[iter].substring(3, arrayArg[iter].length)) ) {
                             dependancy.push(api.loadModule(arrayArg[iter]));
                         } else {
@@ -264,7 +279,8 @@ var Erika = (function () {
                                     } else if (resources.page.hasOwnProperty(arrayArg[iter])) {
                                         dependancy.push(api.loadPageDepedency(arrayArg[iter]));
                                     } else {
-                                        console.log("Error: " + arrayArg[iter] + " is not Found in constants and Factories");
+                                        //console.log("Error: " + arrayArg[iter] + " is not Found in constants and Factories");
+                                        return false;
                                     }
                                 }
                             }
@@ -321,8 +337,14 @@ var Erika = (function () {
                         var last_index = arrayArg.length - 1;
                         var dependancies = arrayArg.slice(0, -1);
                         if (typeof arrayArg[last_index] === "function") {
-                            //console.log(api.loadDependancies(dependancies));
-                            resources['$er'][key.substring(3, key.length)] = arrayArg[last_index].apply(module_dependecy, api.loadDependancies(dependancies)); // arrayArg[last_index];
+                            const result = api.loadDependancies(dependancies);
+                            //resources['$er'][key.substring(3, key.length)] = arrayArg[last_index].apply(module_dependecy, api.loadDependancies(dependancies));
+                            if (result !== false) {
+                                resources['$er'][key.substring(3, key.length)] = arrayArg[last_index].apply(module_dependecy, result);
+                            } else {
+                                resources.dependency_queue[key] = arrayArg;
+                            }
+                             // arrayArg[last_index];
                         } else {
                             console.error("Error: module is not a function");
                         }
@@ -339,8 +361,19 @@ var Erika = (function () {
                     console.error("Error in module " + key + ": should starts with $er");
                 }
                 //console.log(resources);
+                fallback(module);
             }
         };
+    var fallback = function(f){
+        for(let k in resources.dependency_queue) {
+            const args = resources.dependency_queue[k];
+            resources.dependency_queue[k] = undefined;
+            delete resources.dependency_queue[k];
+            setTimeout(function(){
+                f(k, args);
+            }, 10);
+        }
+    };
 
     var module_dependecy = {
         'clone': function(a) {
@@ -442,4 +475,4 @@ var Erika = (function () {
         'lib' : resources.functions
         
     };
-})();
+})());
