@@ -1,5 +1,6 @@
 
-Erika.module('$er_webgl__geometry__point', ['constants', function(constants){
+Erika.module('$er_webgl__geometry__point', ['constants', 
+function(constants){
 
     var self = this;
     var Point =  function(x, y, z) {
@@ -61,6 +62,10 @@ Erika.module('$er_webgl__geometry__point', ['constants', function(constants){
 
         clone: function() {
             return self.clone(this);
+        }, 
+
+        onLine: function(line) {
+            return line.containsPoint(this);
         }
     };
 

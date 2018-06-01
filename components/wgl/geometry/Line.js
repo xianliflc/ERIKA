@@ -39,6 +39,12 @@ Erika.module('$er_webgl__geometry__line', [
         getCenter: function() {
             const b = new $er_webgl__boundry(this.a.x, this.a.y, this.b.x, this.b.y);
             return b.getCenter();
+        },
+
+        containsPoint: function(point) {
+            var vector_a = new $er_webgl__geometry__vector(this.a, point);
+            var vector_b = new $er_webgl__geometry__vector(point, this.b);
+            return point.equalsTo(this.a) || point.equalsTo(this.b) || vector_a.inSameDirectionWith(vector_b);
         }
     };
 
