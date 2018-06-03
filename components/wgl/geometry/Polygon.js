@@ -8,11 +8,19 @@ var Polygon =  function(points) {
 
     this.points = [];
     var obj = this;
+    var temp_points ={};
     points.forEach(function(point){
-        if (point instanceof $er_webgl__geometry__point && point.mode === '2d'){
+        if (point instanceof $er_webgl__geometry__point && point.mode === '2d' 
+            // && !(temp_points.hasOwnProperty('' + point.x) && temp_points['' + point.x].indexOf(point.y) !== -1)
+        ){
             obj.points.push(point);
+            // if (!temp_points.hasOwnProperty('' + point.x)) {
+            //     temp_points['' + point.x] = [];
+            // }
+            // temp_points['' + point.x].push(point.y);
         }
     });
+    temp_points = null;
 };
 
 Polygon.prototype = {

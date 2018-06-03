@@ -32,7 +32,8 @@ Vector.prototype = {
      * get distance
      */
     getDistance: function() {
-        return Math.sqrt(Math.pow(this.x, 2), Math.pow(this.y, 2), Math.pow(this.z, 2));
+        return this.mode === '2d' ? Math.sqrt(Math.pow(this.x, 2)+ Math.pow(this.y, 2)) :  
+        Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));
     },
 
     /**
